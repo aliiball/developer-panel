@@ -32,6 +32,20 @@ export default [
     route("logs", "routes/logs.tsx"),
     route("health", "routes/health.tsx"),
     route("docs", "routes/docs.tsx"),
+    // Delivery & Operations
+    route("issues", "routes/issues.tsx"),
+    route("issues/:issueId", "routes/issues.$issueId.tsx"),
+    route("roadmap", "routes/roadmap.tsx"),
+    route("releases", "routes/releases.tsx"),
+    route("errors", "routes/errors.tsx"),
+    route("flags", "routes/flags.tsx"),
+    route("environments", "routes/environments.tsx"),
+    // Platform
+    route("migrations", "routes/migrations.tsx"),
+    route("team", "routes/team.tsx"),
+    route("api-keys", "routes/api-keys.tsx"),
+    route("agent-runs", "routes/agent-runs.tsx"),
+    route("notifications", "routes/notifications.tsx"),
     // Backward-compat redirect for old /soon/:slug placeholder links.
     route("soon/:slug", "routes/soon-redirect.tsx"),
     // Catch-all 404 (rendered inside the shell, navigable).

@@ -22,6 +22,17 @@ import {
   ScrollText,
   HeartPulse,
   BookOpen,
+  Bug,
+  Lightbulb,
+  Rocket,
+  OctagonAlert,
+  Flag,
+  Server,
+  GitMerge,
+  Users,
+  KeyRound,
+  BotMessageSquare,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,7 +46,7 @@ export interface NavItem {
   /** short description shown in Spotlight preview */
   desc: string;
   soon?: boolean;
-  group: "core" | "expansion";
+  group: "core" | "expansion" | "delivery" | "platform";
 }
 
 export const CORE_NAV: NavItem[] = [
@@ -67,7 +78,26 @@ export const EXPANSION_NAV: NavItem[] = [
   { to: "/docs", label: "Docs", icon: BookOpen, group: "expansion", desc: "Otomatik üretilen API dokümanları." },
 ];
 
-export const ALL_NAV = [...CORE_NAV, ...EXPANSION_NAV];
+// ── Delivery & Operations (teslimat yaşam döngüsü) ────────────────
+export const DELIVERY_NAV: NavItem[] = [
+  { to: "/issues", label: "Issues", icon: Bug, group: "delivery", desc: "Hata raporları için birleşik takip. AI triyaj, önem ve kopya önerir." },
+  { to: "/roadmap", label: "Roadmap", icon: Lightbulb, group: "delivery", desc: "Özellik istekleri panosu: öneri→planlandı→geliştiriliyor→yayınlandı. Oylar." },
+  { to: "/releases", label: "Releases", icon: Rocket, group: "delivery", desc: "Ortamlar, deploy geçmişi, sürüm/changelog, prod'a yükselt ve geri al." },
+  { to: "/errors", label: "Error Tracking", icon: OctagonAlert, group: "delivery", desc: "Gruplanmış exception'lar, stack trace, occurrence sayısı. Issue oluştur." },
+  { to: "/flags", label: "Feature Flags", icon: Flag, group: "delivery", desc: "Özellik bayrakları: on/off, kademeli rollout, ortam kapsamı." },
+  { to: "/environments", label: "Environments", icon: Server, group: "delivery", desc: "Ortam değişkenleri ve gizli anahtarlar (dev/staging/prod)." },
+];
+
+// ── Platform (yaşam döngüsü altyapısı) ────────────────────────────
+export const PLATFORM_NAV: NavItem[] = [
+  { to: "/migrations", label: "Migrations", icon: GitMerge, group: "platform", desc: "Şema migration'ları: uygula, geri al, geçmiş ve SQL önizleme." },
+  { to: "/team", label: "Team", icon: Users, group: "platform", desc: "Üyeler, davetler ve roller. İnsan yönetimi." },
+  { to: "/api-keys", label: "API Keys", icon: KeyRound, group: "platform", desc: "API anahtarı yaşam döngüsü: oluştur, scope, rotate, revoke." },
+  { to: "/agent-runs", label: "AI Agent Runs", icon: BotMessageSquare, group: "platform", desc: "Copilot üretim geçmişi: prompt, sonuç, süre. AI-first imza." },
+  { to: "/notifications", label: "Notifications", icon: Bell, group: "platform", desc: "Deploy, incident, issue ve mention bildirimleri. Okundu durumu." },
+];
+
+export const ALL_NAV = [...CORE_NAV, ...EXPANSION_NAV, ...DELIVERY_NAV, ...PLATFORM_NAV];
 
 export const HOTKEY_NAV = CORE_NAV.filter((n) => n.hotkey).sort(
   (a, b) => (a.hotkey ?? 0) - (b.hotkey ?? 0),

@@ -9,7 +9,7 @@ import {
   CommandList,
 } from "~/components/ui/command";
 import { Dialog, DialogContent, DialogTitle } from "~/components/ui/dialog";
-import { CORE_NAV, EXPANSION_NAV } from "~/data/nav";
+import { ALL_NAV, type NavItem } from "~/data/nav";
 import { PROMPT_CHIPS } from "~/data/prompts";
 import { useUIStore } from "~/stores/ui-store";
 import { useCopilotStore } from "~/stores/copilot-store";
@@ -39,7 +39,13 @@ export function Spotlight() {
 
   const items = useMemo<SpotItem[]>(() => {
     const close = () => setOpen(false);
-    const nav: SpotItem[] = [...CORE_NAV, ...EXPANSION_NAV].map((n) => ({
+    const GROUP_TAG: Record<NavItem["group"], string> = {
+      core: "Sayfa",
+      expansion: "Genişleme",
+      delivery: "Teslimat",
+      platform: "Platform",
+    };
+    const nav: SpotItem[] = ALL_NAV.map((n) => ({
       id: `nav-${n.to}`,
       group: "Navigasyon",
       label: n.label,
@@ -48,7 +54,7 @@ export function Spotlight() {
       preview: {
         title: n.label,
         body: n.desc,
-        tag: n.group === "core" ? "Sayfa" : "Genişleme",
+        tag: GROUP_TAG[n.group],
       },
       run: () => {
         navigate(n.to);

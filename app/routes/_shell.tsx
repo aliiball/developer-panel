@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import { LeftRail } from "~/components/shell/LeftRail";
 import { Topbar } from "~/components/shell/Topbar";
+import { FixBar } from "~/components/shell/FixBar";
 import { Spotlight } from "~/components/shell/Spotlight";
 import { ShortcutSheet } from "~/components/shell/ShortcutSheet";
 import { CopilotRail } from "~/components/copilot/CopilotRail";
@@ -27,6 +28,7 @@ function ShellInner() {
       <LeftRail />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
+        <FixBar />
         <main className="flex min-h-0 flex-1 flex-col">
           <Outlet />
         </main>

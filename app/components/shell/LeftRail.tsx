@@ -1,6 +1,12 @@
 import { NavLink, useLocation } from "react-router";
 import { Hexagon } from "lucide-react";
-import { CORE_NAV, EXPANSION_NAV, type NavItem } from "~/data/nav";
+import {
+  CORE_NAV,
+  EXPANSION_NAV,
+  DELIVERY_NAV,
+  PLATFORM_NAV,
+  type NavItem,
+} from "~/data/nav";
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +27,18 @@ export function LeftRail() {
 
       <div className="mp-scroll flex flex-1 flex-col items-center gap-1 overflow-y-auto">
         {CORE_NAV.map((item) => (
+          <RailLink key={item.to} item={item} />
+        ))}
+
+        <div className="my-1 h-px w-6 bg-border" />
+
+        {DELIVERY_NAV.map((item) => (
+          <RailLink key={item.to} item={item} />
+        ))}
+
+        <div className="my-1 h-px w-6 bg-border" />
+
+        {PLATFORM_NAV.map((item) => (
           <RailLink key={item.to} item={item} />
         ))}
 
