@@ -1,0 +1,22 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+/node_modules/
+
+# Logs & editor
+*.log
+npm-debug.log*
+.vscode/
+.idea/
+
+# Claude Code / AI assistant artifacts (repo'da gözükmesin)
+.claude/
+.claude.json
+CLAUDE.md
+.cursor/
+.aider*
+
+# React Router
+/.react-router/
+/build/
