@@ -26,7 +26,9 @@ export type AIPreview =
   | { kind: "endpoints"; title: string; endpoints: AIEndpointDraft[] }
   | { kind: "form"; title: string; fields: Omit<FormFieldDef, "id">[] }
   | { kind: "permissions"; title: string; roleName: string; permissions: string[] }
-  | { kind: "code"; title: string; language: string; code: string };
+  | { kind: "code"; title: string; language: string; code: string }
+  | { kind: "triage"; title: string; items: { issueId: string; severity: string; duplicateOf?: string }[] }
+  | { kind: "release-notes"; title: string; version: string; markdown: string };
 
 export interface AIResponse {
   text: string;
@@ -303,6 +305,41 @@ function codeExplain(): AIResponse {
   };
 }
 
+function triageSuggest(): AIResponse {
+  return {
+    text: "Açık hata raporlarını önem derecesine göre triyaj ettim ve bir olası kopya buldum.",
+    preview: {
+      kind: "triage",
+      title: "Triyaj önerileri",
+      items: [
+        { issueId: "BUG-142", severity: "critical" },
+        { issueId: "BUG-126", severity: "high", duplicateOf: "BUG-118" },
+      ],
+    },
+  };
+}
+
+function releaseNotes(): AIResponse {
+  return {
+    text: "Son deploy'a giren hata düzeltmeleri ve özelliklerden sürüm notlarını oluşturdum.",
+    preview: {
+      kind: "release-notes",
+      title: "Sürüm Notları",
+      version: "v1.9.0",
+      markdown: [
+        "## v1.9.0",
+        "",
+        "### ✨ Yeni Özellikler",
+        "- Toplu ürün içe aktarma (CSV) — FEAT-54",
+        "",
+        "### 🐛 Düzeltmeler",
+        "- Order.placedAt filtresi hızlandırıldı — BUG-138",
+        "- Sepette kuponun iki kez uygulanması giderildi — BUG-142",
+      ].join("\n"),
+    },
+  };
+}
+
 // ── Router ────────────────────────────────────────────────────────
 
 export function getMockAIResponse(
@@ -318,6 +355,15 @@ export function getMockAIResponse(
   else if (has("palet", "renk", "wcag", "kontrast", "tema")) res = palette();
   else if (has("seo")) res = seoFields(context?.model);
   else if (has("fiyat", "stok", "alan ekle", "alan öner")) res = addFields(context?.model);
+  // ── Delivery & Operations ──
+  else if (has("triyaj", "triage", "hata raporu")) res = triageSuggest();
+  else if (has("sürüm not", "release note", "changelog", "release")) res = releaseNotes();
+  else if (has("kümele", "cluster", "birleştir")) res = { text: "Benzer özellik isteklerini iki temaya kümeledim: **Yerelleştirme** (FEAT-49) ve **Webhook güvenliği** (FEAT-61). İlk kümeyi tek epic altında birleştirmeyi öneririm." };
+  else if (has("kök neden", "hata analiz") || (has("analiz") && context?.route === "/errors")) res = { text: "Bu hata büyük olasılıkla kupon uygulanırken `null` bir sipariş toplamından kaynaklanıyor. `OrderService.applyCoupon` içinde guard önerilir. Bağlantılı: **BUG-142**." };
+  else if (has("flag")) res = { text: "`subscription_billing` flag'i %0 rollout'ta ve bağlı özellik henüz **building**. `new_checkout_ui` %100'de ve stabil. Riskli bir tam-açık flag görünmüyor." };
+  else if (has("ortam değişken", "secret", "sızab", "env değişken")) res = { text: "prod ortamında `STRIPE_SECRET_KEY` 1 aydır rotate edilmemiş — yenilemeniz önerilir. `DEBUG=true` yalnızca dev'de mevcut, doğru. Eksik kritik değişken bulamadım." };
+  else if (has("anahtar", "api key")) res = { text: "1 anahtar (**Eski entegrasyon**) 3 aydır kullanılmıyor — revoke önerilir. **CI pipeline** anahtarı `deploy` scope'una sahip; gerçekten gerekli mi gözden geçirin." };
+  // ── Build/data ──
   else if (has("endpoint", "crud", "api")) res = crudEndpoints();
   else if (has("kayıt", "signup", "register")) res = signupForm();
   else if (has("iletişim", "contact", "form")) res = contactForm();

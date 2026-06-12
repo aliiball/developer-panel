@@ -11,6 +11,7 @@ import { cn } from "~/lib/utils";
 
 function hintFor(pathname: string) {
   if (pathname.startsWith("/schema/")) return ROUTE_HINTS["/schema/"];
+  if (pathname.startsWith("/issues/")) return ROUTE_HINTS["/issues/"];
   return ROUTE_HINTS[pathname] ?? ROUTE_HINTS["/"];
 }
 

@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router";
-import { Database, Boxes, Plug, GitCommitHorizontal, Plus, Sparkles, Palette, Activity } from "lucide-react";
+import { Database, Boxes, Plug, GitCommitHorizontal, Plus, Sparkles, Palette, Activity, Bug, Rocket, Lightbulb, OctagonAlert } from "lucide-react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { StatCard, StatGrid } from "~/components/dashboard/StatCard";
 import { ActivityFeed } from "~/components/dashboard/ActivityFeed";
 import { InsightStrip } from "~/components/dashboard/InsightStrip";
-import { DASHBOARD_STATS, MODULE_USAGE } from "~/data/metrics";
+import { DASHBOARD_STATS, DELIVERY_STATS, MODULE_USAGE } from "~/data/metrics";
 import { useCopilotStore } from "~/stores/copilot-store";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
@@ -39,6 +39,16 @@ export default function Dashboard() {
           <StatCard label="API Endpoints" value={DASHBOARD_STATS.endpoints.value} delta={DASHBOARD_STATS.endpoints.delta} icon={Plug} spark={DASHBOARD_STATS.endpoints.spark} to={DASHBOARD_STATS.endpoints.to} />
           <StatCard label="Migrations" value={DASHBOARD_STATS.migrations.value} delta={DASHBOARD_STATS.migrations.delta} icon={GitCommitHorizontal} spark={DASHBOARD_STATS.migrations.spark} to={DASHBOARD_STATS.migrations.to} />
         </StatGrid>
+
+        <div>
+          <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Teslimat & Operasyon</h2>
+          <StatGrid>
+            <StatCard label="Açık Hatalar" value={DELIVERY_STATS.openBugs.value} delta={DELIVERY_STATS.openBugs.delta} icon={Bug} spark={DELIVERY_STATS.openBugs.spark} to={DELIVERY_STATS.openBugs.to} />
+            <StatCard label="Bekleyen Deploy" value={DELIVERY_STATS.pendingDeploys.value} delta={DELIVERY_STATS.pendingDeploys.delta} icon={Rocket} spark={DELIVERY_STATS.pendingDeploys.spark} to={DELIVERY_STATS.pendingDeploys.to} />
+            <StatCard label="Geliştirilen Özellik" value={DELIVERY_STATS.building.value} delta={DELIVERY_STATS.building.delta} icon={Lightbulb} spark={DELIVERY_STATS.building.spark} to={DELIVERY_STATS.building.to} />
+            <StatCard label="Hata Olayları" value={DELIVERY_STATS.errors.value} delta={DELIVERY_STATS.errors.delta} icon={OctagonAlert} spark={DELIVERY_STATS.errors.spark} to={DELIVERY_STATS.errors.to} />
+          </StatGrid>
+        </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
           <Card className="lg:col-span-2">

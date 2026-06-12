@@ -43,6 +43,10 @@ export function applyPreview(preview: AIPreview): string {
       return `${preview.roleName} için ${preview.permissions.length} izin önerisi hazır.`;
     case "code":
       return "Kod önizlemesi Code Editor'e gönderildi (mock).";
+    case "triage":
+      return `${preview.items.length} issue için triyaj önerisi uygulandı (mock).`;
+    case "release-notes":
+      return `${preview.version} sürüm notları panoya kopyalandı (mock).`;
     default:
       return "Uygulandı.";
   }

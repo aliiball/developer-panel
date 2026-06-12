@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { Copy, Eye, EyeOff, Monitor, Moon, Sun } from "lucide-react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useTheme } from "~/components/shell/ThemeProvider";
@@ -87,7 +88,10 @@ export default function Settings() {
                     <Copy className="size-4" />
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Bu anahtar yalnızca prototip amaçlıdır, gerçek bir uç noktaya bağlı değildir.</p>
+                <p className="text-xs text-muted-foreground">
+                  Birden fazla anahtar, scope, rotate ve revoke için{" "}
+                  <Link to="/api-keys" className="text-primary hover:underline">API Keys</Link> sayfasını kullanın.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>

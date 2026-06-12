@@ -39,5 +39,20 @@ export const DASHBOARD_STATS = {
   models: { value: 12, delta: "+2 bu hafta", spark: STAT_SPARKS.models, to: "/schema" },
   modules: { value: 8, delta: "3 aktif", spark: STAT_SPARKS.modules, to: "/modules" },
   endpoints: { value: 47, delta: "auto-generated", spark: STAT_SPARKS.endpoints, to: "/api-explorer" },
-  migrations: { value: 23, delta: "son: 2 saat önce", spark: STAT_SPARKS.migrations, to: "/code" },
+  migrations: { value: 23, delta: "son: 2 saat önce", spark: STAT_SPARKS.migrations, to: "/migrations" },
+};
+
+// Delivery & operations KPIs.
+const DELIVERY_SPARKS = {
+  bugs: [2, 3, 5, 4, 6, 5, 4, 4].map((v, i) => ({ label: `w${i}`, value: v })),
+  deploys: [1, 0, 2, 1, 3, 1, 2, 2].map((v, i) => ({ label: `w${i}`, value: v })),
+  features: [1, 1, 2, 2, 2, 3, 2, 2].map((v, i) => ({ label: `w${i}`, value: v })),
+  errors: [320, 410, 380, 520, 610, 480, 540, 470].map((v, i) => ({ label: `w${i}`, value: v })),
+} satisfies Record<string, Point[]>;
+
+export const DELIVERY_STATS = {
+  openBugs: { value: 4, delta: "2 kritik", spark: DELIVERY_SPARKS.bugs, to: "/issues" },
+  pendingDeploys: { value: 2, delta: "staging hazır", spark: DELIVERY_SPARKS.deploys, to: "/releases" },
+  building: { value: 2, delta: "roadmap'te", spark: DELIVERY_SPARKS.features, to: "/roadmap" },
+  errors: { value: "1.2K", delta: "son 24s olay", spark: DELIVERY_SPARKS.errors, to: "/errors" },
 };

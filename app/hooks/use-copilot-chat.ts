@@ -9,6 +9,7 @@ import { useSchemaStore } from "~/stores/schema-store";
 // component reveals. Pure client-side, no network.
 export function useCopilotChat() {
   const pushMessage = useCopilotStore((s) => s.pushMessage);
+  const recordRun = useCopilotStore((s) => s.recordRun);
   const messages = useCopilotStore((s) => s.messages);
   const location = useLocation();
 
@@ -38,8 +39,17 @@ export function useCopilotChat() {
         streaming: true,
       };
       window.setTimeout(() => pushMessage(assistant), Math.min(600, res.thinkingMs ?? 400));
+
+      // Record the generation for the AI Agent Runs surface.
+      recordRun({
+        prompt: trimmed,
+        surface: location.pathname,
+        outcome: res.preview ? "preview" : "text",
+        previewKind: res.preview?.kind,
+        durationMs: res.thinkingMs ?? 400,
+      });
     },
-    [pushMessage, location.pathname],
+    [pushMessage, recordRun, location.pathname],
   );
 
   const alternative = useCallback(

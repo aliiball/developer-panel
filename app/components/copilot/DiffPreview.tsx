@@ -175,6 +175,24 @@ function PreviewBody({ preview }: { preview: AIPreview }) {
           <code>{preview.code}</code>
         </pre>
       );
+    case "triage":
+      return (
+        <div className="space-y-1 font-mono text-[11px]">
+          {preview.items.map((it) => (
+            <div key={it.issueId} className="flex items-center gap-2">
+              <span className="text-foreground">{it.issueId}</span>
+              <Badge variant="outline" className="text-[10px]">{it.severity}</Badge>
+              {it.duplicateOf && <span className="text-muted-foreground">kopya → {it.duplicateOf}</span>}
+            </div>
+          ))}
+        </div>
+      );
+    case "release-notes":
+      return (
+        <pre className="mp-scroll max-h-56 overflow-auto whitespace-pre-wrap rounded-md bg-background/60 p-2 font-mono text-[11px] leading-relaxed">
+          <code>{preview.markdown}</code>
+        </pre>
+      );
   }
 }
 
