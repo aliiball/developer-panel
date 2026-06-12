@@ -38,16 +38,23 @@ npm run typecheck
 2. **AI-destekli öneri** — şema satırında ✨ tip önerisi; Theme'de WCAG Fail → AI düzeltme.
 3. **Dokuya gömülü birleşim** — her sayfada bağlam-duyarlı Copilot Rail + ⌘K AI komutları + proaktif öneriler.
 
-## Sayfalar
+## Sayfalar (34 yüzey)
 
-12 çekirdek: Dashboard, AI Copilot, Schema (+ `:modelId` dnd alan editörü), ERD, Data Manager,
-Form Builder, Modules, Permissions, Theme, API Explorer, Code Editor, Activity, Settings.
-Genişleme yüzeyleri Rail'de "Yakında" rozetiyle görünür.
+- **Çekirdek (13):** Dashboard, AI Copilot, Schema (+ `:modelId` dnd alan editörü), ERD, Data Manager,
+  Form Builder, Modules, Permissions, Theme, API Explorer, Code Editor, Activity, Settings.
+- **Teslimat & Operasyon (6):** Issues (bug tracker + müşteri intake), Roadmap (Kanban + oylama),
+  Releases (ortamlar + CI pipeline + rollback), Error Tracking, Feature Flags, Environments & Secrets.
+- **Platform (5):** Migrations, Team & Members, API Keys, AI Agent Runs, Notifications.
+- **Genişleme (10):** Workflows, Terminal, Media, Email Templates, Reports, Scheduler, Webhooks,
+  Logs, Health, Docs.
+
+> Teslimat döngüsü canlı bağlıdır: Error Tracking → Issue oluştur → çözüldü → Releases changelog → AI sürüm notları.
 
 ## Dağıtım (GitHub Pages)
 
 `.github/workflows/deploy.yml` `main`'e push'ta çalışır: `npm ci` → `npm run build` →
-`index.html`→`404.html` kopyası (derin route fallback) → Pages'e deploy. Subpath **Vite `base: "/developer-panel/"`**
-ile çözülür (React Router `basename` + `prerender` kullanılmaz — bu kombinasyon RR7 v7.2+'da regresyonlu).
+`index.html`→`404.html` kopyası (derin route fallback) → Pages'e deploy. Subpath iki mekanizmayla çözülür:
+**Vite `base: "/developer-panel/"`** (asset prefix) + **React Router koşullu `basename`** (prod'da `/developer-panel/`,
+dev'de `/`). `prerender` kullanılmaz — `basename` + `prerender` kombinasyonu RR7 v7.2+'da regresyonlu.
 
 > Repo adı `developer-panel` değilse `vite.config.ts`'teki `base` değerini repo adınızla güncelleyin.
