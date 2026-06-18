@@ -320,7 +320,7 @@ export default function Schema() {
           },
         ]}
       />
-      <PageBody>
+      <PageBody className="space-y-5">
         {/* KPI şeridi */}
         {loading ? (
           <KpiSkeleton count={4} />
