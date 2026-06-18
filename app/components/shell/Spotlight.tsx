@@ -14,8 +14,17 @@ import { PROMPT_CHIPS } from "~/data/prompts";
 import { useUIStore } from "~/stores/ui-store";
 import { useCopilotStore } from "~/stores/copilot-store";
 import { useTheme } from "~/components/shell/ThemeProvider";
-import { Sparkles, ArrowRight, CornerDownLeft, type LucideIcon } from "lucide-react";
-import { Plus, Palette, Keyboard } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  ArrowRight,
+  ArrowElbowDownLeft as CornerDownLeft,
+  type Icon as LucideIcon,
+} from "@phosphor-icons/react";
+import {
+  Plus,
+  Palette,
+  Keyboard,
+} from "@phosphor-icons/react";
 import { cn } from "~/lib/utils";
 
 interface SpotItem {
@@ -40,10 +49,13 @@ export function Spotlight() {
   const items = useMemo<SpotItem[]>(() => {
     const close = () => setOpen(false);
     const GROUP_TAG: Record<NavItem["group"], string> = {
-      core: "Sayfa",
-      expansion: "Genişleme",
+      pinned: "Sayfa",
+      modeling: "Veri Modeli",
+      builder: "Oluşturucu",
+      integration: "Entegrasyon",
       delivery: "Teslimat",
-      platform: "Platform",
+      operations: "Operasyon",
+      workspace: "Çalışma Alanı",
     };
     const nav: SpotItem[] = ALL_NAV.map((n) => ({
       id: `nav-${n.to}`,
