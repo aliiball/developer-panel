@@ -681,7 +681,7 @@ export default function Code() {
               label: "Genel",
               content: (
                 <div className="space-y-4">
-                  <div className="divide-y rounded-lg border bg-card/40 px-3">
+                  <div className="divide-y rounded-lg border bg-card/40">
                     <Field label="Dosya yolu" mono>{file.path}</Field>
                     <Field label="Dil">{LANG_META[file.lang].label}</Field>
                     <Field label="Kaynak model" mono>{file.source}</Field>

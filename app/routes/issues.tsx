@@ -602,43 +602,33 @@ function IssueDrawer({
       </div>
 
       <div className="divide-y rounded-lg border">
-        <div className="px-3">
-          <Field label="ID" mono>{issue.id}</Field>
-        </div>
-        <div className="px-3">
-          <Field label="Önem">
-            <Select value={issue.severity} onValueChange={(v) => v && onSeverity(issue.id, v as IssueSeverity)}>
-              <SelectTrigger className="h-7 w-32 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>{SEVERITY_OPTS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-            </Select>
-          </Field>
-        </div>
-        <div className="px-3">
-          <Field label="Durum">
-            <Select value={issue.status} onValueChange={(v) => v && onStatus(issue.id, v as IssueStatus)}>
-              <SelectTrigger className="h-7 w-36 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>{STATUS_OPTS.map((s) => <SelectItem key={s.v} value={s.v}>{s.label}</SelectItem>)}</SelectContent>
-            </Select>
-          </Field>
-        </div>
-        <div className="px-3">
-          <Field label="Atanan">
-            <Select value={issue.assignee ?? "—"} onValueChange={(v) => v && onAssign(issue.id, v as string)}>
-              <SelectTrigger className="h-7 w-32 text-xs"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="—">atanmadı</SelectItem>
-                {TEAM_MEMBERS_SHORT.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </Field>
-        </div>
-        <div className="px-3">
-          <Field label="Kaynak"><span className="inline-flex items-center gap-1"><Src className="size-3.5" />{SOURCE_LABEL[issue.source]}</span></Field>
-        </div>
-        <div className="px-3"><Field label="Raporlayan" mono>{issue.reporter}</Field></div>
-        {issue.linkedModel && <div className="px-3"><Field label="Model"><span className="inline-flex items-center gap-1"><Database className="size-3.5 text-muted-foreground" />{issue.linkedModel}</span></Field></div>}
-        {issue.linkedModule && <div className="px-3"><Field label="Modül"><span className="inline-flex items-center gap-1"><GitBranch className="size-3.5 text-muted-foreground" />{issue.linkedModule}</span></Field></div>}
-        <div className="px-3"><Field label="Oluşturma">{issue.createdAt}</Field></div>
+        <Field label="ID" mono>{issue.id}</Field>
+        <Field label="Önem">
+          <Select value={issue.severity} onValueChange={(v) => v && onSeverity(issue.id, v as IssueSeverity)}>
+            <SelectTrigger className="h-7 w-32 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>{SEVERITY_OPTS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+          </Select>
+        </Field>
+        <Field label="Durum">
+          <Select value={issue.status} onValueChange={(v) => v && onStatus(issue.id, v as IssueStatus)}>
+            <SelectTrigger className="h-7 w-36 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>{STATUS_OPTS.map((s) => <SelectItem key={s.v} value={s.v}>{s.label}</SelectItem>)}</SelectContent>
+          </Select>
+        </Field>
+        <Field label="Atanan">
+          <Select value={issue.assignee ?? "—"} onValueChange={(v) => v && onAssign(issue.id, v as string)}>
+            <SelectTrigger className="h-7 w-32 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="—">atanmadı</SelectItem>
+              {TEAM_MEMBERS_SHORT.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field label="Kaynak"><span className="inline-flex items-center gap-1"><Src className="size-3.5" />{SOURCE_LABEL[issue.source]}</span></Field>
+        <Field label="Raporlayan" mono>{issue.reporter}</Field>
+        {issue.linkedModel && <Field label="Model"><span className="inline-flex items-center gap-1"><Database className="size-3.5 text-muted-foreground" />{issue.linkedModel}</span></Field>}
+        {issue.linkedModule && <Field label="Modül"><span className="inline-flex items-center gap-1"><GitBranch className="size-3.5 text-muted-foreground" />{issue.linkedModule}</span></Field>}
+        <Field label="Oluşturma">{issue.createdAt}</Field>
       </div>
 
       {issue.aiSuggested && (

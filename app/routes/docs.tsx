@@ -549,7 +549,7 @@ export default function Docs() {
                   label: "Genel",
                   content: (
                     <div className="space-y-4">
-                      <div className="rounded-lg border bg-card/50 px-3">
+                      <div className="rounded-lg border bg-card/50">
                         <Field label="Model">{selected.model}</Field>
                         <Field label="Method" mono>
                           {selected.method}

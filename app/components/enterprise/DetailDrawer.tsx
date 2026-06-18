@@ -96,9 +96,9 @@ export function Field({
   mono?: boolean;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-2">
+    <div className="flex items-start justify-between gap-4 px-3 py-2.5">
       <span className="shrink-0 text-xs text-muted-foreground">{label}</span>
-      <span className={cn("text-right text-sm", mono && "font-mono text-xs")}>{children}</span>
+      <span className={cn("text-right text-sm leading-relaxed", mono && "font-mono text-xs")}>{children}</span>
     </div>
   );
 }

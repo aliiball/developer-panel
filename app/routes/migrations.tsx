@@ -643,7 +643,7 @@ function GeneralTab({ row }: { row: MigrationRow }) {
         <MiniStat label="Silinen" value={`-${row.dropped}`} tone="text-red-400" icon={Database} />
       </div>
 
-      <div className="divide-y rounded-lg border px-3">
+      <div className="divide-y rounded-lg border">
         <Field label="Versiyon" mono>{row.version}</Field>
         <Field label="Ortam">
           <StatusBadge label={ENV_LABEL[row.env]} tone={ENV_TONE[row.env]} />

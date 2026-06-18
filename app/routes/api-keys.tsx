@@ -823,7 +823,7 @@ function DetailGeneral({ k }: { k: RichApiKey }) {
         <Stat label="Rate limit" value={`${k.rateLimit}/dk`} />
       </div>
 
-      <div className="divide-y rounded-lg border bg-card/40 px-3">
+      <div className="divide-y rounded-lg border bg-card/40">
         <Field label="Durum">
           {k.revoked ? (
             <Badge variant="secondary" className="text-[9px] text-red-400">iptal edildi</Badge>

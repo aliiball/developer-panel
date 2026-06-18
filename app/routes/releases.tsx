@@ -866,7 +866,7 @@ function DeployDrawer({
             <StatusTimeline steps={steps} />
           </div>
 
-          <div className="divide-y rounded-lg border bg-card px-3">
+          <div className="divide-y rounded-lg border bg-card">
             <Field label="Sürüm" mono>{d.version}</Field>
             <Field label="Ortam">
               <Badge variant="outline" className={cn("text-[10px]", ENV_TONE[d.env])}>

@@ -196,7 +196,7 @@ export default function Team() {
                   <div className="text-xs text-muted-foreground">{detail.title}</div>
                 </div>
               </div>
-              <div className="divide-y rounded-lg border bg-card/40 px-3">
+              <div className="divide-y rounded-lg border bg-card/40">
                 <Field label="E-posta" mono>{active.email}</Field>
                 <Field label="Rol">
                   <StatusBadge label={active.role} tone={ROLE_TONE[active.role] ?? "muted"} />

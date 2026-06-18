@@ -541,7 +541,7 @@ function ErrorDrawer({
                 </div>
               </div>
 
-              <div className="space-y-0.5 rounded-xl border bg-card px-3 py-1">
+              <div className="space-y-0.5 rounded-xl border bg-card py-1">
                 <Field label="Culprit" mono>{e.culprit}</Field>
                 <Field label="Runtime" mono>{meta?.runtime ?? "—"}</Field>
                 <Field label="İlk görülen release" mono>{meta?.release ?? "—"}</Field>
