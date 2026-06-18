@@ -225,7 +225,7 @@ export default function Roadmap() {
           {topReq && (
             <div className="flex flex-wrap items-center gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 text-sm">
               <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                <Lightning className="size-4" weight="fill" />
+                <Lightning className="size-4" weight="regular" />
               </span>
               <div className="min-w-0">
                 <p className="font-medium">

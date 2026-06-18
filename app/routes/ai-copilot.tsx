@@ -161,7 +161,7 @@ export default function AICopilot() {
             {/* Hero + flagship composer — vitrin merkezde */}
             <div className="mx-auto w-full max-w-2xl pt-4 text-center">
               <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
-                <Sparkles className="size-7" weight="fill" />
+                <Sparkles className="size-7" weight="regular" />
               </div>
               <h2 className="text-2xl font-semibold tracking-tight">Ne oluşturmak istersiniz?</h2>
               <p className="mx-auto mt-1.5 max-w-lg text-sm text-muted-foreground">
@@ -225,7 +225,7 @@ export default function AICopilot() {
                     <p className="text-sm font-medium">{c.title}</p>
                     <p className="text-xs leading-relaxed text-muted-foreground">{c.description}</p>
                     <span className="mt-1 flex items-center gap-1 text-[11px] font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                      <Lightning className="size-3" weight="fill" /> Bu örneği dene
+                      <Lightning className="size-3" weight="regular" /> Bu örneği dene
                     </span>
                   </button>
                 ))}

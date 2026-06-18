@@ -77,7 +77,7 @@ export function meta() {
   return [{ title: "Model Editörü — MetaPanel" }];
 }
 
-// crude type inference for the per-row ✨ suggestion
+// crude type inference for the per-row AI suggestion
 function suggestType(name: string): FieldType {
   const n = name.toLowerCase();
   if (n.includes("email")) return "email";

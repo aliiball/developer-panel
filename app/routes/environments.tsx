@@ -356,20 +356,20 @@ function RiskBadge({ v }: { v: EnvVarRich }) {
   if (r === "ok") {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-        <CheckCircle className="size-3 text-emerald-400" weight="fill" /> sağlıklı
+        <CheckCircle className="size-3 text-emerald-400" weight="regular" /> sağlıklı
       </span>
     );
   }
   if (r === "soon") {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-amber-400">
-        <ClockCountdown className="size-3" weight="fill" /> {v.rotateBy}
+        <ClockCountdown className="size-3" weight="regular" /> {v.rotateBy}
       </span>
     );
   }
   return (
     <span className="inline-flex items-center gap-1 text-[11px] text-red-400">
-      <ShieldWarning className="size-3" weight="fill" /> rotate gerekli
+      <ShieldWarning className="size-3" weight="regular" /> rotate gerekli
     </span>
   );
 }
@@ -564,11 +564,11 @@ function VarDrawer({
       <Field label="Deploy uyumu">
         {v.synced ? (
           <span className="inline-flex items-center gap-1 text-emerald-400">
-            <CheckCircle className="size-3.5" weight="fill" /> eşitli
+            <CheckCircle className="size-3.5" weight="regular" /> eşitli
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 text-red-400">
-            <WarningCircle className="size-3.5" weight="fill" /> drift
+            <WarningCircle className="size-3.5" weight="regular" /> drift
           </span>
         )}
       </Field>

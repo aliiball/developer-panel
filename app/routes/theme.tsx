@@ -416,7 +416,7 @@ export default function ThemePage() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-medium">{p.name}</span>
-                        {active && <CheckCircle className="size-3.5 text-primary" weight="fill" />}
+                        {active && <CheckCircle className="size-3.5 text-primary" weight="regular" />}
                       </div>
                       <p className="mt-0.5 text-[11px] text-muted-foreground">{p.desc}</p>
                     </button>
@@ -516,9 +516,9 @@ export default function ThemePage() {
                         {a.ratio.toFixed(1)}
                       </span>
                       {a.ratio >= 4.5 ? (
-                        <CheckCircle className="size-4 shrink-0 text-emerald-400" weight="fill" />
+                        <CheckCircle className="size-4 shrink-0 text-emerald-400" weight="regular" />
                       ) : (
-                        <XCircle className="size-4 shrink-0 text-red-400" weight="fill" />
+                        <XCircle className="size-4 shrink-0 text-red-400" weight="regular" />
                       )}
                     </div>
                   );

@@ -275,7 +275,7 @@ export default function Migrations() {
                 : "border-amber-400/30 bg-amber-400/5 text-amber-200",
             )}
           >
-            <Warning className="size-4 shrink-0" weight="fill" />
+            <Warning className="size-4 shrink-0" weight="regular" />
             <span className="font-medium">
               {counts.pending} bekleyen migration
               {counts.highRiskPending > 0 && ` · ${counts.highRiskPending} yüksek riskli`}
@@ -464,7 +464,7 @@ export default function Migrations() {
                         <code className="truncate font-mono text-xs font-medium">{m.id}</code>
                         <StatusBadge label={STATUS_LABEL[m.status]} tone={STATUS_TONE[m.status]} />
                         {!m.reversible && (
-                          <span className="text-[10px] text-amber-400" title="geri alınamaz">⚠ irreversible</span>
+                          <span className="inline-flex items-center gap-1 text-[10px] text-amber-400" title="geri alınamaz"><Warning className="size-3" weight="regular" /> irreversible</span>
                         )}
                       </div>
                       <p className="truncate text-xs text-muted-foreground">{m.name}</p>
@@ -593,13 +593,13 @@ export default function Migrations() {
           </DialogHeader>
           {confirm?.kind === "rollback" && !confirm.row.downSql && (
             <div className="flex items-start gap-2 rounded-lg border border-red-400/30 bg-red-400/5 p-3 text-xs text-red-300">
-              <ShieldWarning className="mt-0.5 size-4 shrink-0" weight="fill" />
+              <ShieldWarning className="mt-0.5 size-4 shrink-0" weight="regular" />
               Bu migration geri alınamaz (down SQL tanımlı değil). Yalnızca durumu işaretlenir; veri kaybı manuel onarım gerektirir.
             </div>
           )}
           {confirm?.kind === "apply" && confirm.row.risk === "high" && (
             <div className="flex items-start gap-2 rounded-lg border border-amber-400/30 bg-amber-400/5 p-3 text-xs text-amber-200">
-              <Warning className="mt-0.5 size-4 shrink-0" weight="fill" />
+              <Warning className="mt-0.5 size-4 shrink-0" weight="regular" />
               Yüksek riskli: {confirm.row.affectedTables.join(", ")} · ~{fmtRows(confirm.row.estRows)} satır etkilenebilir.
             </div>
           )}

@@ -36,7 +36,7 @@ export const RICH_TEMPLATES: RichTemplate[] = [
   {
     id: "welcome",
     name: "Hoş Geldiniz",
-    subject: "{{firstName}}, aramıza hoş geldin! 🎉",
+    subject: "{{firstName}}, aramıza hoş geldin!",
     preheader: "Hesabın hazır — ilk adımları birlikte atalım.",
     category: "Onboarding",
     status: "published",
@@ -136,7 +136,7 @@ export const RICH_TEMPLATES: RichTemplate[] = [
   {
     id: "shipped",
     name: "Kargoya Verildi",
-    subject: "Siparişin yola çıktı 🚚 — #{{orderRef}}",
+    subject: "Siparişin yola çıktı — #{{orderRef}}",
     preheader: "Tahmini teslim: {{eta}}.",
     category: "Transactional",
     status: "published",
@@ -210,7 +210,7 @@ export const RICH_TEMPLATES: RichTemplate[] = [
   {
     id: "winback",
     name: "Seni Özledik",
-    subject: "Uzun zaman oldu {{firstName}} 👋",
+    subject: "Uzun zaman oldu {{firstName}}",
     preheader: "Yeniliklerimize bir göz at.",
     category: "Marketing",
     status: "archived",

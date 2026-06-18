@@ -1,10 +1,15 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 import { toast } from "sonner";
+import { Lightbulb, Lightning, Sparkle, type Icon } from "@phosphor-icons/react";
 import { PROACTIVE_INSIGHTS } from "~/data/prompts";
 import { useCopilotStore } from "~/stores/copilot-store";
 
-const KIND_EMOJI = { insight: "💡", optimization: "⚡", feature: "✨" } as const;
+const KIND_ICON: Record<"insight" | "optimization" | "feature", Icon> = {
+  insight: Lightbulb,
+  optimization: Lightning,
+  feature: Sparkle,
+};
 
 // Surfaces a route-relevant AI insight as a toast a few seconds after landing
 // on a page — but only once per route per session. Respects reduced-motion by
@@ -20,14 +25,20 @@ export function ProactiveTip() {
 
     const t = window.setTimeout(() => {
       shown.current.add(location.pathname);
-      toast(`${KIND_EMOJI[insight.kind]} ${insight.title}`, {
-        description: insight.body,
-        duration: 8000,
-        action: {
-          label: "Copilot'a sor",
-          onClick: () => queuePrompt(insight.body),
+      const Icon = KIND_ICON[insight.kind];
+      toast(
+        <span className="flex items-center gap-1.5">
+          <Icon className="size-4 text-primary" weight="regular" /> {insight.title}
+        </span>,
+        {
+          description: insight.body,
+          duration: 8000,
+          action: {
+            label: "Copilot'a sor",
+            onClick: () => queuePrompt(insight.body),
+          },
         },
-      });
+      );
     }, 3500);
 
     return () => window.clearTimeout(t);

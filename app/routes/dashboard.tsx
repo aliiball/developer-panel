@@ -256,7 +256,7 @@ export default function Dashboard() {
                 )}
               >
                 <div className="flex items-start gap-2">
-                  <t.icon className={cn("mt-0.5 size-4 shrink-0", t.text)} weight="fill" />
+                  <t.icon className={cn("mt-0.5 size-4 shrink-0", t.text)} weight="regular" />
                   <p className="text-xs font-medium leading-snug">{h.title}</p>
                 </div>
                 <p className="mt-1.5 line-clamp-2 text-[11px] text-muted-foreground">{h.detail}</p>

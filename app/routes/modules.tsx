@@ -558,7 +558,7 @@ function ModuleCard({
             <button onClick={onOpen} className="flex items-center gap-1.5 text-left">
               <span className="truncate text-sm font-medium">{mod.name}</span>
               {meta?.verified && (
-                <ShieldCheck className="size-3.5 shrink-0 text-emerald-400" weight="fill" />
+                <ShieldCheck className="size-3.5 shrink-0 text-emerald-400" weight="regular" />
               )}
             </button>
             <p className="line-clamp-2 text-xs text-muted-foreground">{mod.description}</p>
@@ -577,7 +577,7 @@ function ModuleCard({
           {meta && (
             <>
               <span className="flex items-center gap-0.5 tabular-nums">
-                <Star className="size-3 text-amber-400" weight="fill" /> {meta.rating}
+                <Star className="size-3 text-amber-400" weight="regular" /> {meta.rating}
               </span>
               <span className="tabular-nums">{(meta.installs / 1000).toFixed(1)}k</span>
               <span className="truncate">{meta.publisher}</span>
@@ -698,7 +698,7 @@ function ModuleDrawer({
           {meta && (
             <Field label="Puan">
               <span className="inline-flex items-center gap-1">
-                <Star className="size-3 text-amber-400" weight="fill" /> {meta.rating} · {meta.reviews} yorum
+                <Star className="size-3 text-amber-400" weight="regular" /> {meta.rating} · {meta.reviews} yorum
               </span>
             </Field>
           )}
@@ -746,7 +746,7 @@ function ModuleDrawer({
                       </span>
                       {ok ? (
                         <Badge variant="outline" className="gap-1 text-[10px] text-emerald-400">
-                          <CheckCircle className="size-2.5" weight="fill" /> kurulu
+                          <CheckCircle className="size-2.5" weight="regular" /> kurulu
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="gap-1 text-[10px] text-red-400">

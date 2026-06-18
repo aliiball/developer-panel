@@ -570,7 +570,7 @@ export default function Media() {
                     <span className="min-w-0">
                       <span className="flex items-center gap-1.5">
                         <span className="truncate font-medium">{m.name}</span>
-                        {m.starred && <Star className="size-3 shrink-0 text-amber-400" weight="fill" />}
+                        {m.starred && <Star className="size-3 shrink-0 text-amber-400" weight="regular" />}
                       </span>
                       <span className="block truncate text-[11px] text-muted-foreground">
                         {TYPE_LABEL[m.type]}

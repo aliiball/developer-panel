@@ -769,7 +769,7 @@ function SchemeOption({
     >
       <TIcon className="size-5" />
       <span className="text-xs font-medium">{label}</span>
-      {active && <CheckCircle className="size-3.5" weight="fill" />}
+      {active && <CheckCircle className="size-3.5" weight="regular" />}
     </button>
   );
 }

@@ -659,7 +659,7 @@ function SurfaceInsight({
       {priciest && (
         <div className="flex flex-col justify-between rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
           <div className="flex items-start gap-2.5">
-            <CurrencyDollar className="mt-0.5 size-4 shrink-0 text-amber-400" weight="fill" />
+            <CurrencyDollar className="mt-0.5 size-4 shrink-0 text-amber-400" weight="regular" />
             <div className="min-w-0">
               <p className="text-sm font-medium text-amber-400">En maliyetli çalıştırma</p>
               <p className="mt-0.5 truncate text-xs text-muted-foreground">{priciest.run.prompt}</p>
@@ -721,7 +721,7 @@ function OverviewTab({
 
       {meta.errorMessage && (
         <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs text-muted-foreground">
-          <Warning className="mt-0.5 size-3.5 shrink-0 text-red-400" weight="fill" />
+          <Warning className="mt-0.5 size-3.5 shrink-0 text-red-400" weight="regular" />
           {meta.errorMessage}
         </div>
       )}

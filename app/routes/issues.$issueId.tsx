@@ -293,7 +293,7 @@ export default function IssueDetail() {
 
         {slaBreached && (
           <div className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-2.5 text-sm text-red-400">
-            <Warning className="size-4 shrink-0" weight="fill" />
+            <Warning className="size-4 shrink-0" weight="regular" />
             <span>
               SLA ihlali: kayıt {Math.round(telemetry.ageHours)} saattir açık, hedef {telemetry.slaTargetHours} saat.
               Önceliklendirme gerekiyor.
@@ -326,7 +326,7 @@ export default function IssueDetail() {
             {(issue.aiSuggested || enrich?.aiRationale) && (
               <section className="rounded-xl border border-primary/20 bg-primary/5 p-4">
                 <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-primary">
-                  <Sparkles className="size-4" weight="fill" /> AI Triyaj
+                  <Sparkles className="size-4" weight="regular" /> AI Triyaj
                   {enrich?.aiConfidence != null && (
                     <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] tabular-nums">
                       güven %{enrich.aiConfidence}

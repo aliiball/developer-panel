@@ -291,7 +291,7 @@ export default function Webhooks() {
         {/* Insight uyarısı */}
         {failingHooks > 0 && (
           <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/5 px-3.5 py-2.5 text-sm">
-            <Warning className="mt-0.5 size-4 shrink-0 text-amber-400" weight="fill" />
+            <Warning className="mt-0.5 size-4 shrink-0 text-amber-400" weight="regular" />
             <p className="text-muted-foreground">
               <span className="font-medium text-amber-400">{failingHooks} endpoint başarısız durumda.</span>{" "}
               <span className="font-mono text-xs">crm.legacy.net</span> son 1 saatte ardışık 5xx döndürüyor; retry bütçesi tükeniyor. İmza secret veya endpoint erişilebilirliğini kontrol edin.
@@ -383,7 +383,7 @@ export default function Webhooks() {
             {/* Test gönder paneli */}
             <div className="space-y-2.5 rounded-xl border bg-card p-4">
               <div className="flex items-center gap-2">
-                <Lightning className="size-4 text-primary" weight="fill" />
+                <Lightning className="size-4 text-primary" weight="regular" />
                 <h3 className="text-sm font-medium">Test gönder</h3>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -635,7 +635,7 @@ function OverviewTab({ d, hookUrl }: { d: DeliveryLog; hookUrl?: string }) {
         <Field label="Endpoint" mono>{hookUrl ?? d.endpoint}</Field>
         <Field label="Durum">
           <span className={cn("inline-flex items-center gap-1", TONE_CLS[tone].split(" ")[0])}>
-            {tone === "ok" ? <CheckCircle className="size-3.5" weight="fill" /> : <XCircle className="size-3.5" weight="fill" />}
+            {tone === "ok" ? <CheckCircle className="size-3.5" weight="regular" /> : <XCircle className="size-3.5" weight="regular" />}
             {d.status === 0 ? "Bağlantı hatası" : `HTTP ${d.status}`}
           </span>
         </Field>
@@ -689,7 +689,7 @@ if (!timingSafeEqual(sig, expected)) reject(401);`}
         </pre>
       </div>
       <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-muted-foreground">
-        <Warning className="mt-0.5 size-3.5 shrink-0 text-amber-400" weight="fill" />
+        <Warning className="mt-0.5 size-3.5 shrink-0 text-amber-400" weight="regular" />
         Secret'ı döndürdüğünüzde eski değer 24 saat boyunca geçerli kalır; bu sürede entegrasyonunuzu güncelleyin.
       </div>
     </div>

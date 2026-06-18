@@ -107,7 +107,7 @@ export const EMAIL_TEMPLATES: EmailTemplate[] = [
   {
     id: "welcome",
     name: "Hoş Geldiniz",
-    subject: "{{firstName}}, aramıza hoş geldin! 🎉",
+    subject: "{{firstName}}, aramıza hoş geldin!",
     category: "Onboarding",
     updated: "2 gün önce",
     variables: ["firstName", "appName", "ctaUrl"],

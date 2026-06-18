@@ -395,7 +395,7 @@ export default function ApiKeys() {
         {/* Risk şeridi */}
         {stats.risky > 0 && (
           <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-300">
-            <WarningOctagon className="mt-0.5 size-4 shrink-0" weight="fill" />
+            <WarningOctagon className="mt-0.5 size-4 shrink-0" weight="regular" />
             <span>
               <b className="font-semibold">{stats.risky} anahtarda risk sinyali var.</b>{" "}
               Olası sır sızıntısı veya anormal erişim tespit edildi. İlgili anahtarları
@@ -552,7 +552,7 @@ export default function ApiKeys() {
                             {k.leak && !k.revoked && (
                               <span title={k.leak.source}>
                                 <Badge variant="outline" className="gap-1 border-red-500/40 text-[9px] text-red-400">
-                                  <WarningOctagon className="size-2.5" weight="fill" /> risk
+                                  <WarningOctagon className="size-2.5" weight="regular" /> risk
                                 </Badge>
                               </span>
                             )}
@@ -671,7 +671,7 @@ export default function ApiKeys() {
               {confirm?.kind === "rotate" ? (
                 <RotateCw className="size-4 text-amber-400" />
               ) : (
-                <WarningOctagon className="size-4 text-red-400" weight="fill" />
+                <WarningOctagon className="size-4 text-red-400" weight="regular" />
               )}
               {confirm?.kind === "rotate" ? "Anahtarı yenile?" : "Anahtarı iptal et?"}
             </DialogTitle>
@@ -800,7 +800,7 @@ function DetailGeneral({ k }: { k: RichApiKey }) {
     <div className="space-y-4">
       {k.leak && !k.revoked && (
         <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-300">
-          <WarningOctagon className="mt-0.5 size-4 shrink-0" weight="fill" />
+          <WarningOctagon className="mt-0.5 size-4 shrink-0" weight="regular" />
           <span>
             <b className="font-semibold">
               {k.leak.severity === "high" ? "Yüksek riskli sızıntı" : "Şüpheli erişim"}

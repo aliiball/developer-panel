@@ -329,10 +329,10 @@ function releaseNotes(): AIResponse {
       markdown: [
         "## v1.9.0",
         "",
-        "### ✨ Yeni Özellikler",
+        "### Yeni Özellikler",
         "- Toplu ürün içe aktarma (CSV) — FEAT-54",
         "",
-        "### 🐛 Düzeltmeler",
+        "### Düzeltmeler",
         "- Order.placedAt filtresi hızlandırıldı — BUG-138",
         "- Sepette kuponun iki kez uygulanması giderildi — BUG-142",
       ].join("\n"),
