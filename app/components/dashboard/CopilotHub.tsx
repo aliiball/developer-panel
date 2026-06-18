@@ -16,7 +16,7 @@ export function CopilotHub() {
       {/* Sol — Yetenekler */}
       <aside className="order-2 space-y-2 lg:order-1 lg:col-span-3">
         <ColLabel icon={Sparkle} title="Yetenekler" />
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
+        <div className="grid grid-cols-2 gap-2">
           {CAPABILITIES.map((c) => (
             <SuggestCard key={c.label} item={c} onClick={() => queuePrompt(c.prompt)} />
           ))}
@@ -31,7 +31,7 @@ export function CopilotHub() {
       {/* Sağ — Örnek istemler */}
       <aside className="order-3 space-y-2 lg:col-span-3">
         <ColLabel icon={BookOpen} title="Örnek istemler" />
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
+        <div className="grid grid-cols-2 gap-2">
           {PROMPTS.map((p) => (
             <SuggestCard key={p.label} item={p} onClick={() => queuePrompt(p.prompt)} />
           ))}
