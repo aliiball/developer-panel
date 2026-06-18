@@ -1,16 +1,16 @@
 import {
-  Type,
+  TextT as Type,
   Hash,
-  Mail,
-  AlignLeft,
-  ChevronDownSquare,
+  Envelope as Mail,
+  TextAlignLeft as AlignLeft,
+  CaretDown as ChevronDownSquare,
   CheckSquare,
-  CircleDot,
+  RadioButton as CircleDot,
   Calendar,
-  Upload,
-  Heading,
+  UploadSimple as Upload,
+  TextH as Heading,
   Minus,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import type { FormFieldKind } from "~/stores/form-store";
 
 const PALETTE: { kind: FormFieldKind; label: string; icon: typeof Type }[] = [

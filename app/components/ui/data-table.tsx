@@ -8,7 +8,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Search } from "lucide-react";
+import {
+  ArrowsDownUp as ArrowUpDown,
+  MagnifyingGlass as Search,
+} from "@phosphor-icons/react";
 import {
   Table,
   TableBody,

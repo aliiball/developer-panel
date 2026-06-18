@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import {
+  Copy,
+  Check,
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 import type { SchemaModel } from "~/stores/schema-store";
 import { modelToJson, modelToTs, modelToSql } from "~/lib/codegen";

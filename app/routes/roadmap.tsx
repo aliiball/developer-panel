@@ -1,4 +1,7 @@
-import { Sparkles, Boxes } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Stack as Boxes,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { KanbanBoard, type KanbanColumn } from "~/components/delivery/KanbanBoard";
 import { VotePill } from "~/components/delivery/VotePill";

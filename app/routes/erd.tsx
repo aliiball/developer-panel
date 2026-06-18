@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
-import { Sparkles, Move } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  ArrowsOutCardinal as Move,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useSchemaStore } from "~/stores/schema-store";
 import { useCopilotStore } from "~/stores/copilot-store";

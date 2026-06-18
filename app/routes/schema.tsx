@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Plus, Sparkles, Database, Link2, Clock } from "lucide-react";
+import {
+  Plus,
+  Sparkle as Sparkles,
+  Database,
+  Link as Link2,
+  Clock,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { DataTable } from "~/components/ui/data-table";
 import { useSchemaStore, type SchemaModel } from "~/stores/schema-store";

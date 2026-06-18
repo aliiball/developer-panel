@@ -11,7 +11,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { Sparkles, Eraser } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Eraser,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { FieldPalette } from "~/components/forms/FieldPalette";
 import { CanvasField } from "~/components/forms/FormCanvas";

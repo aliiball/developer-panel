@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { UserPlus, Sparkles, ShieldCheck } from "lucide-react";
+import {
+  UserPlus,
+  Sparkle as Sparkles,
+  ShieldCheck,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SEED_MEMBERS, ROLE_OPTIONS, type Member, type MemberStatus } from "~/data/platform";
 import { StatusBadge, type Tone } from "~/components/delivery/badges";

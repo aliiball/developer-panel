@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Plus, Webhook as WebhookIcon, Circle } from "lucide-react";
+import {
+  Plus,
+  WebhooksLogo as WebhookIcon,
+  Circle,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { WEBHOOKS, WEBHOOK_DELIVERIES, type WebhookDef } from "~/data/expansion";
 import { Switch } from "~/components/ui/switch";

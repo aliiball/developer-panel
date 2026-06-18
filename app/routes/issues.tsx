@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Sparkles, Smartphone, Mail, PenLine, Bug } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  DeviceMobile as Smartphone,
+  Envelope as Mail,
+  PencilSimpleLine as PenLine,
+  Bug,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { DataTable } from "~/components/ui/data-table";
 import { useIssueStore } from "~/stores/issue-store";

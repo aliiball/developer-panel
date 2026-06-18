@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { BotMessageSquare, Sparkles, FileCode2, Palette, Plug, FormInput, Database, MessageSquare } from "lucide-react";
+import {
+  Robot as BotMessageSquare,
+  Sparkle as Sparkles,
+  FileCode as FileCode2,
+  Palette,
+  Plug,
+  Textbox as FormInput,
+  Database,
+  Chat as MessageSquare,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useCopilotStore, type AgentRun } from "~/stores/copilot-store";
 import { StatusBadge } from "~/components/delivery/badges";

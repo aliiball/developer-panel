@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, X, RefreshCw, Sparkles } from "lucide-react";
+import {
+  Check,
+  X,
+  ArrowsClockwise as RefreshCw,
+  Sparkle as Sparkles,
+} from "@phosphor-icons/react";
 import type { AIPreview } from "~/lib/ai-mock";
 import { applyPreview } from "~/lib/apply-preview";
 import { Button } from "~/components/ui/button";

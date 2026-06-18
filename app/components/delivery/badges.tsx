@@ -1,4 +1,6 @@
-import type { LucideIcon } from "lucide-react";
+import {
+  type Icon as LucideIcon,
+} from "@phosphor-icons/react";
 import { cn } from "~/lib/utils";
 
 export type Tone = "emerald" | "amber" | "orange" | "red" | "sky" | "violet" | "muted";

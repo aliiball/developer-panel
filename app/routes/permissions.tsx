@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Sparkles, Plus, ShieldCheck, Lock } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Plus,
+  ShieldCheck,
+  Lock,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import {
   SEED_ROLES,

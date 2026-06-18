@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { RotateCcw, Sparkles, AlertTriangle, Wand2 } from "lucide-react";
+import {
+  ArrowCounterClockwise as RotateCcw,
+  Sparkle as Sparkles,
+  Warning as AlertTriangle,
+  MagicWand as Wand2,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { ContrastBadge } from "~/components/theme/ContrastBadge";
 import { TokenExport } from "~/components/theme/TokenExport";

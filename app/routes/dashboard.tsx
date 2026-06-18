@@ -1,5 +1,18 @@
 import { useNavigate } from "react-router";
-import { Database, Boxes, Plug, GitCommitHorizontal, Plus, Sparkles, Palette, Activity, Bug, Rocket, Lightbulb, OctagonAlert } from "lucide-react";
+import {
+  Database,
+  Stack as Boxes,
+  Plug,
+  GitCommit as GitCommitHorizontal,
+  Plus,
+  Sparkle as Sparkles,
+  Palette,
+  Pulse as Activity,
+  Bug,
+  RocketLaunch as Rocket,
+  Lightbulb,
+  WarningOctagon as OctagonAlert,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { StatCard, StatGrid } from "~/components/dashboard/StatCard";
 import { ActivityFeed } from "~/components/dashboard/ActivityFeed";

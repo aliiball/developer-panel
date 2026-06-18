@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Copy, Eye, EyeOff, Monitor, Moon, Sun } from "lucide-react";
+import {
+  Copy,
+  Eye,
+  EyeSlash as EyeOff,
+  Monitor,
+  Moon,
+  Sun,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useTheme } from "~/components/shell/ThemeProvider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";

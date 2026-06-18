@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { TerminalIcon, Trash2 } from "lucide-react";
+import {
+  TerminalWindow as TerminalIcon,
+  Trash as Trash2,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { Button } from "~/components/ui/button";
 

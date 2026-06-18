@@ -1,5 +1,12 @@
 import { useLocation, useNavigate } from "react-router";
-import { Search, Sparkles, Keyboard, Sun, Moon, Bell } from "lucide-react";
+import {
+  MagnifyingGlass as Search,
+  Sparkle as Sparkles,
+  Keyboard,
+  Sun,
+  Moon,
+  Bell,
+} from "@phosphor-icons/react";
 import { useUIStore } from "~/stores/ui-store";
 import { useCopilotStore } from "~/stores/copilot-store";
 import { useNotificationStore } from "~/stores/notification-store";

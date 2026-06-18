@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Upload, ImageIcon, FileText, Film, Music, Search } from "lucide-react";
+import {
+  UploadSimple as Upload,
+  Image as ImageIcon,
+  FileText,
+  FilmStrip as Film,
+  MusicNotes as Music,
+  MagnifyingGlass as Search,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { MEDIA, type MediaItem } from "~/data/expansion";
 import { Badge } from "~/components/ui/badge";

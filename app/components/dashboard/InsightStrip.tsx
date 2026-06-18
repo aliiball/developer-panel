@@ -1,4 +1,7 @@
-import { Sparkles, ArrowRight } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  ArrowRight,
+} from "@phosphor-icons/react";
 import { useCopilotStore } from "~/stores/copilot-store";
 
 const INSIGHTS = [

@@ -1,5 +1,12 @@
 import { useNavigate } from "react-router";
-import { Rocket, AlertTriangle, Bug, AtSign, Sparkles, CheckCheck } from "lucide-react";
+import {
+  RocketLaunch as Rocket,
+  Warning as AlertTriangle,
+  Bug,
+  At as AtSign,
+  Sparkle as Sparkles,
+  Checks as CheckCheck,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useNotificationStore } from "~/stores/notification-store";
 import type { NotificationType } from "~/data/platform";

@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Sparkles, Plus, Eye, EyeOff, Lock, Server } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Plus,
+  Eye,
+  EyeSlash as EyeOff,
+  Lock,
+  HardDrives as Server,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SEED_ENV_VARS, type EnvVar, type EnvName } from "~/data/delivery";
 import { useCopilotStore } from "~/stores/copilot-store";

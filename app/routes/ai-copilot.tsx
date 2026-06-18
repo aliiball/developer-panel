@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Send, Trash2 } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  PaperPlaneTilt as Send,
+  Trash as Trash2,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { PromptChips } from "~/components/copilot/PromptChips";
 import { StreamingText } from "~/components/copilot/StreamingText";

@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Search, Pause, Play } from "lucide-react";
+import {
+  MagnifyingGlass as Search,
+  Pause,
+  Play,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { LOGS, type LogLevel } from "~/data/expansion";
 import { cn } from "~/lib/utils";

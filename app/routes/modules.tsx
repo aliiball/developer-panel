@@ -1,4 +1,9 @@
-import { Sparkles, Download, Check, Boxes } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Download,
+  Check,
+  Stack as Boxes,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { DependencyGraph } from "~/components/modules/DependencyGraph";
 import { useModuleStore, type ModuleDef } from "~/stores/module-store";

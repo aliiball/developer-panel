@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Plus, Upload, Download, Pencil } from "lucide-react";
+import {
+  Plus,
+  UploadSimple as Upload,
+  Download,
+  Pencil,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { DataTable } from "~/components/ui/data-table";
 import { useSchemaStore, type SchemaModel } from "~/stores/schema-store";

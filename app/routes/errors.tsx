@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Sparkles, OctagonAlert, Users, GitBranch, Bug } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  WarningOctagon as OctagonAlert,
+  Users,
+  GitBranch,
+  Bug,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SEED_ERRORS, type ErrorGroup } from "~/data/delivery";
 import { StatusBadge } from "~/components/delivery/badges";

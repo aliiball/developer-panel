@@ -1,4 +1,9 @@
-import { Check, X, Loader2, Circle } from "lucide-react";
+import {
+  Check,
+  X,
+  CircleNotch as Loader2,
+  Circle,
+} from "@phosphor-icons/react";
 import { cn } from "~/lib/utils";
 
 export interface TimelineStep {

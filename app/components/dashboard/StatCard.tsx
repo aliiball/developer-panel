@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
-import type { LucideIcon } from "lucide-react";
+import {
+  type Icon as LucideIcon,
+} from "@phosphor-icons/react";
 import type { Point } from "~/data/metrics";
 import { cn } from "~/lib/utils";
 

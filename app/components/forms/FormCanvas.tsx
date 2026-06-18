@@ -1,6 +1,9 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Trash2 } from "lucide-react";
+import {
+  DotsSixVertical as GripVertical,
+  Trash as Trash2,
+} from "@phosphor-icons/react";
 import type { FormFieldDef } from "~/stores/form-store";
 import { cn } from "~/lib/utils";
 import { FieldRenderer } from "~/components/forms/FieldRenderer";

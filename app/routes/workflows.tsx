@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Sparkles, Plus, Zap, GitBranch, Play, Webhook } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Plus,
+  Lightning as Zap,
+  GitBranch,
+  Play,
+  WebhooksLogo as Webhook,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { WORKFLOWS, type WorkflowDef, type WorkflowStep } from "~/data/expansion";
 import { useCopilotStore } from "~/stores/copilot-store";

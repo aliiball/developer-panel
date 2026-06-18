@@ -1,5 +1,9 @@
 import { Link, useLocation } from "react-router";
-import { Compass, ArrowLeft, Search } from "lucide-react";
+import {
+  Compass,
+  ArrowLeft,
+  MagnifyingGlass as Search,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { Button } from "~/components/ui/button";
 import { useUIStore } from "~/stores/ui-store";

@@ -1,4 +1,6 @@
-import { ChevronUp } from "lucide-react";
+import {
+  CaretUp as ChevronUp,
+} from "@phosphor-icons/react";
 import { cn } from "~/lib/utils";
 
 // Upvote control for Roadmap cards.

@@ -1,6 +1,18 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
-import { ArrowLeft, Sparkles, Send, Database, Boxes, Smartphone, Mail, PenLine, Wrench, GitCommitHorizontal, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Sparkle as Sparkles,
+  PaperPlaneTilt as Send,
+  Database,
+  Stack as Boxes,
+  DeviceMobile as Smartphone,
+  Envelope as Mail,
+  PencilSimpleLine as PenLine,
+  Wrench,
+  GitCommit as GitCommitHorizontal,
+  CheckCircle as CheckCircle2,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useIssueStore } from "~/stores/issue-store";
 import { useSchemaStore } from "~/stores/schema-store";

@@ -14,7 +14,12 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis, restrictToParentElement } from "@dnd-kit/modifiers";
-import { ArrowLeft, Plus, Sparkles, Wand2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Sparkle as Sparkles,
+  MagicWand as Wand2,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { FieldEditorRow } from "~/components/schema/FieldEditorRow";
 import { SchemaJsonPreview } from "~/components/schema/SchemaJsonPreview";

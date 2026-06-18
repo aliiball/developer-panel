@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Sparkles, Plus, Flag as FlagIcon, Lightbulb } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Plus,
+  Flag as FlagIcon,
+  Lightbulb,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SEED_FLAGS, type FeatureFlag } from "~/data/delivery";
 import { useCopilotStore } from "~/stores/copilot-store";

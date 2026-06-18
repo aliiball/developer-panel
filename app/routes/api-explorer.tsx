@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Play, Sparkles, Lock } from "lucide-react";
+import {
+  Play,
+  Sparkle as Sparkles,
+  Lock,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { ENDPOINTS, type Endpoint } from "~/data/endpoints";
 import { useCopilotStore } from "~/stores/copilot-store";

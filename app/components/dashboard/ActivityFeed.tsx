@@ -1,5 +1,12 @@
 import { Link } from "react-router";
-import { Database, Boxes, GitCommitHorizontal, Plug, Palette, Sparkles } from "lucide-react";
+import {
+  Database,
+  Stack as Boxes,
+  GitCommit as GitCommitHorizontal,
+  Plug,
+  Palette,
+  Sparkle as Sparkles,
+} from "@phosphor-icons/react";
 import { ACTIVITIES, type ActivityType } from "~/data/activities";
 
 // Each activity type deep-links to its home surface.

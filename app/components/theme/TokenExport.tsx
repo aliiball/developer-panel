@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import {
+  Copy,
+  Check,
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 import type { BrandColors } from "~/stores/theme-store";
 import { brandToCssVars, brandToTailwind, brandToTokensJson } from "~/lib/codegen";

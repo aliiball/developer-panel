@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Plus, KeyRound, Copy, RotateCw, Trash2, Check, Lock } from "lucide-react";
+import {
+  Plus,
+  Key as KeyRound,
+  Copy,
+  ArrowClockwise as RotateCw,
+  Trash as Trash2,
+  Check,
+  Lock,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SEED_API_KEYS, type ApiKey } from "~/data/platform";
 import { Badge } from "~/components/ui/badge";

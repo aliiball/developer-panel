@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Plus, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Clock,
+  CheckCircle as CheckCircle2,
+  XCircle,
+  CircleNotch as Loader2,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { CRON_JOBS, type CronJob } from "~/data/expansion";
 import { Switch } from "~/components/ui/switch";

@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Sparkles, GitMerge, ChevronDown, Play, Undo2, CheckCircle2, Clock } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  GitMerge,
+  CaretDown as ChevronDown,
+  Play,
+  ArrowUUpLeft as Undo2,
+  CheckCircle as CheckCircle2,
+  Clock,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SEED_MIGRATIONS, type Migration, type MigrationStatus } from "~/data/platform";
 import { StatusBadge, type Tone } from "~/components/delivery/badges";

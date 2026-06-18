@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { Wrench, GitCommitHorizontal, Check, X } from "lucide-react";
+import {
+  Wrench,
+  GitCommit as GitCommitHorizontal,
+  Check,
+  X,
+} from "@phosphor-icons/react";
 import { useChangeSetStore } from "~/stores/change-set-store";
 import { useIssueStore } from "~/stores/issue-store";
 import { ALL_NAV } from "~/data/nav";

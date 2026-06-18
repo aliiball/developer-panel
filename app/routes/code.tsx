@@ -3,7 +3,11 @@ import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
 import { githubDark } from "@uiw/codemirror-theme-github";
-import { File, Folder, Sparkles } from "lucide-react";
+import {
+  File,
+  Folder,
+  Sparkle as Sparkles,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useSchemaStore } from "~/stores/schema-store";
 import { useCopilotStore } from "~/stores/copilot-store";

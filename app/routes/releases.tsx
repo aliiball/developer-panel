@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Rocket, Sparkles, ChevronDown, Undo2, GitCommitHorizontal, ArrowUpToLine } from "lucide-react";
+import {
+  RocketLaunch as Rocket,
+  Sparkle as Sparkles,
+  CaretDown as ChevronDown,
+  ArrowUUpLeft as Undo2,
+  GitCommit as GitCommitHorizontal,
+  ArrowLineUp as ArrowUpToLine,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { StatusTimeline, type TimelineStep } from "~/components/delivery/StatusTimeline";
 import { DeployStatusBadge } from "~/components/delivery/badges";

@@ -1,6 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Sparkles, Trash2 } from "lucide-react";
+import {
+  DotsSixVertical as GripVertical,
+  Sparkle as Sparkles,
+  Trash as Trash2,
+} from "@phosphor-icons/react";
 import type { SchemaField, FieldType } from "~/stores/schema-store";
 import { FIELD_TYPES } from "~/stores/schema-store";
 import {

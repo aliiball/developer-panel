@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
-import { Sparkles, X, Send, Lightbulb } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  X,
+  PaperPlaneTilt as Send,
+  Lightbulb,
+} from "@phosphor-icons/react";
 import { useCopilotStore } from "~/stores/copilot-store";
 import { useCopilotChat } from "~/hooks/use-copilot-chat";
 import { ROUTE_HINTS } from "~/data/prompts";

@@ -3,7 +3,12 @@ import {
   Bar, BarChart, Line, LineChart, Pie, PieChart, Cell,
   CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { Save, BarChart3, LineChart as LineIcon, PieChart as PieIcon } from "lucide-react";
+import {
+  FloppyDisk as Save,
+  ChartBar as BarChart3,
+  ChartLine as LineIcon,
+  ChartPie as PieIcon,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useSchemaStore } from "~/stores/schema-store";
 import {

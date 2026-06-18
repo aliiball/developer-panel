@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Sparkles, Plus, Mail } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  Plus,
+  Envelope as Mail,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { EMAIL_TEMPLATES, type EmailTemplate } from "~/data/expansion";
 import { useCopilotStore } from "~/stores/copilot-store";

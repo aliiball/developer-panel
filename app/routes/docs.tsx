@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Sparkles, BookOpen, Hash } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+  BookOpen,
+  Hash,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { DOC_SECTIONS } from "~/data/expansion";
 import { ENDPOINTS } from "~/data/endpoints";

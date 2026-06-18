@@ -1,4 +1,6 @@
-import { Sparkles } from "lucide-react";
+import {
+  Sparkle as Sparkles,
+} from "@phosphor-icons/react";
 import { PROMPT_CHIPS } from "~/data/prompts";
 
 const CATEGORY_LABEL: Record<string, string> = {

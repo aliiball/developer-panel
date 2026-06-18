@@ -1,5 +1,10 @@
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
-import { CheckCircle2, AlertTriangle, XCircle, Activity } from "lucide-react";
+import {
+  CheckCircle as CheckCircle2,
+  Warning as AlertTriangle,
+  XCircle,
+  Pulse as Activity,
+} from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { SERVICES, type ServiceHealth } from "~/data/expansion";
 import { Card, CardContent } from "~/components/ui/card";
