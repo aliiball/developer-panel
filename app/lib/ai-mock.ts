@@ -56,6 +56,13 @@ const ff = (
   extra: Partial<FormFieldDef> = {},
 ): Omit<FormFieldDef, "id"> => ({ kind, label, ...extra });
 
+// Turn-based rotation so the same (or unrecognized) prompt doesn't echo the
+// exact same wording twice in a row — gives the canned engine a "live" feel.
+let _turn = 0;
+function rotate<T>(variants: T[]): T {
+  return variants[_turn++ % variants.length];
+}
+
 // ── Canned generators ─────────────────────────────────────────────
 
 function blogModule(): AIResponse {
@@ -340,6 +347,84 @@ function releaseNotes(): AIResponse {
   };
 }
 
+// ── Insight / ops generators (panel verisiyle tutarlı) ────────────
+
+function workspaceSummary(): AIResponse {
+  return {
+    text: rotate([
+      "Son 30 günün özeti: **370K API çağrısı** (%3.8↑), **655 deploy** (%2.7↑), p95 yanıt **203ms** (stabil). " +
+        "Üç risk öne çıkıyor:\n" +
+        "1. **Hata oranı dünden %34 yüksek** — çoğunluk `/api/checkout` 500'lerinden geliyor.\n" +
+        "2. **2 deploy staging'de onay bekliyor** (v2.4.0 ve hotfix/payments).\n" +
+        "3. **Order.placedAt index'siz** filtreleniyor — eklenirse sorgu ~%60 hızlanır.\n\n" +
+        "İstersen checkout hatalarının kök neden analizini çıkarayım.",
+      "30 günlük tabloya baktım: trafik ve deploy hacmi artışta (API %3.8, deploy %2.7), gecikme stabil (p95 203ms). " +
+        "Dikkat çeken üç nokta — checkout 500'leri (hata oranı %34 arttı), staging'de onay bekleyen 2 deploy, " +
+        "ve indekssiz `Order.placedAt` filtresi. Önceliği checkout hatalarına vermeni öneririm; istersen migration taslağı hazırlarım.",
+      "Kısa özet: workspace sağlıklı büyüyor (370K çağrı, 655 deploy) ama üç şeyi takip et — " +
+        "bir gecede %34 artan hata oranı (kaynak: checkout), prod onayı bekleyen 2 sürüm ve `Order.placedAt` üzerinde eksik indeks. " +
+        "Hangisinden başlayalım?",
+    ]),
+  };
+}
+
+function healthSummary(): AIResponse {
+  return {
+    text: rotate([
+      "Servislerin geneli sağlıklı: **8/9 yeşil**, 30 günlük uptime ortalaması **%99.94**. " +
+        "Tek dikkat noktası `payments` — p95 latency son 24 saatte 180ms'den 240ms'ye çıktı (SLA hedefi 250ms, sınırda). " +
+        "Crash-free oranı son sürümle **%99.4**'e yükseldi.",
+      "Sağlık özeti: uptime **%99.94**, crash-free **%99.4** (↑0.6 puan). `payments` servisinde latency yükselişi var " +
+        "(p95 240ms, SLA'ya yakın); diğer tüm servisler hedeflerinde. Aksiyon gerektiren kritik bir durum yok, ama payments'i izlemekte fayda var.",
+    ]),
+  };
+}
+
+function indexSuggest(): AIResponse {
+  return {
+    text: rotate([
+      "Sorgu loglarına göre en yüksek kazanç **`Order.placedAt`** alanında: sık tarih-aralığı filtresi var ama indeks yok. " +
+        "B-tree indeks eklersen tahmini sorgu süresi **~%60** düşer. İkincil aday `Product.category` (join'lerde tarama yapıyor). " +
+        "İstersen ikisi için de migration üretirim.",
+      "İki indeks öneriyorum:\n" +
+        "1. **`Order.placedAt`** — tarih filtreleri full-scan yapıyor, B-tree ile ~%60 hızlanır.\n" +
+        "2. **`OrderItem.order`** — sipariş join'lerinde faydalı.\n" +
+        "Uygulamak istersen migration taslağını hazırlayayım.",
+    ]),
+  };
+}
+
+function modelClarify(): AIResponse {
+  return {
+    text: rotate([
+      "Memnuniyetle bir model üretirim — hangi alanı kapsasın? Birkaç hazır başlangıç: **e-ticaret** (Product/Order), " +
+        "**blog** (Post/Author/Comment) ya da **CRM** (Customer/Deal). Alanı söyle, ilişkileriyle birlikte taslağı çıkarayım.",
+      "Tabii. Tek satırda neyi modellemek istediğini yaz (ör. \"abonelik faturalandırma\" veya \"etkinlik bileti\"), " +
+        "ben de alanlar, tipler ve ilişkilerle birlikte uygulanabilir bir taslak hazırlayayım.",
+    ]),
+  };
+}
+
+// Anlaşılmayan / boş niyetli girdiler: girdiyi yankılayıp değişken yanıt ver —
+// böylece "her seferinde aynı metin" hissi oluşmaz.
+function clarify(prompt: string): AIResponse {
+  const q = prompt.trim().replace(/\s+/g, " ");
+  const short = q.length <= 36 ? q : q.slice(0, 36) + "…";
+  const wordy = q.split(" ").length >= 3;
+
+  const unclear = [
+    `“${short}” ile tam olarak neyi kastettiğini çözemedim. Bir **model**, **form**, **endpoint** ya da **tema** mı üreteyim? Tek cümle yeter — örn. “blog şeması üret”.`,
+    `Hmm, “${short}” bana yeterli ipucu vermedi. Ne oluşturayım: şema mı, modül mü, form mu? Örnek: “iletişim formu oluştur”.`,
+    `“${short}” için bir niyet yakalayamadım. Kısaca tarif edersen hemen üretirim — mesela “Product modeline price ve stock ekle”.`,
+  ];
+  const needContext = [
+    `“${short}” isteğini birkaç şekilde ele alabilirim. Netleştirelim: şema mı, modül mü, form mu, yoksa endpoint mi hedefliyorsun?`,
+    `Anladım, “${short}” üzerine çalışabilirim. Çıktı model/şema mı olsun yoksa form/endpoint mi? Bir örnek verirsen sonucu ona göre şekillendiririm.`,
+    `“${short}” için en iyi yaklaşımı seçmem adına küçük bir detay: bu bir veri modeli mi, UI formu mu, yoksa API tarafı mı?`,
+  ];
+  return { text: rotate(wordy ? needContext : unclear) };
+}
+
 // ── Router ────────────────────────────────────────────────────────
 
 export function getMockAIResponse(
@@ -355,6 +440,10 @@ export function getMockAIResponse(
   else if (has("palet", "renk", "wcag", "kontrast", "tema")) res = palette();
   else if (has("seo")) res = seoFields(context?.model);
   else if (has("fiyat", "stok", "alan ekle", "alan öner")) res = addFields(context?.model);
+  // ── Insight / ops (panel verisiyle uyumlu) ──
+  else if (has("sağlık", "saglik", "health", "uptime", "servis durum")) res = healthSummary();
+  else if (has("index", "indeks", "yavaş sorgu", "yavas sorgu", "performans", "optimize")) res = indexSuggest();
+  else if (has("özet", "ozet", "ne değişti", "ne degisti", "özetle", "summarize", "summary", "workspace", "bu hafta", "rapor")) res = workspaceSummary();
   // ── Delivery & Operations ──
   else if (has("triyaj", "triage", "hata raporu")) res = triageSuggest();
   else if (has("sürüm not", "release note", "changelog", "release")) res = releaseNotes();
@@ -369,13 +458,8 @@ export function getMockAIResponse(
   else if (has("iletişim", "contact", "form")) res = contactForm();
   else if (has("izin", "permission", "rol")) res = permissionSuggest();
   else if (has("migration", "kod", "code", "açıkla")) res = codeExplain();
-  else {
-    res = {
-      text:
-        "Bunu birkaç şekilde yorumlayabilirim. Daha net olmak gerekirse: şema mı, modül mü, form mu, " +
-        "yoksa renk paleti mi üreteyim? Örnek: \"e-ticaret şeması oluştur\" ya da \"WCAG AA palet üret\".",
-    };
-  }
+  else if (has("yeni model", "model oluştur", "model olustur", "model tasarla", "veri modeli")) res = modelClarify();
+  else res = clarify(prompt);
 
   // crude pacing: ~12ms/char, capped
   res.thinkingMs = Math.min(1400, 300 + res.text.length * 4);

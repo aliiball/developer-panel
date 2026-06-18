@@ -8,7 +8,6 @@ import {
 export default [
   layout("routes/_shell.tsx", [
     index("routes/dashboard.tsx"),
-    route("ai-copilot", "routes/ai-copilot.tsx"),
     route("schema", "routes/schema.tsx"),
     route("schema/:modelId", "routes/schema.$modelId.tsx"),
     route("erd", "routes/erd.tsx"),

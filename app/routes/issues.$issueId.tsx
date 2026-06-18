@@ -168,7 +168,6 @@ export default function IssueDetail() {
     else if (issue!.linkedModule) navigate("/modules");
     else {
       queuePrompt(`${issue!.id}: "${issue!.title}" hatasının kök nedenini ve çözümünü öner.`);
-      navigate("/ai-copilot");
     }
   }
 
@@ -393,7 +392,6 @@ export default function IssueDetail() {
                     className="h-7 gap-1.5 text-xs"
                     onClick={() => {
                       queuePrompt(`${issue.id}: "${issue.title}" için kök neden analizi ve düzeltme planı üret.`);
-                      navigate("/ai-copilot");
                     }}
                   >
                     <Lightning className="size-3.5" /> Copilot'a sor

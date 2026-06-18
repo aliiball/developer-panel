@@ -1,6 +1,5 @@
 import {
   SquaresFour,
-  Sparkle,
   Database,
   TreeStructure,
   Table,
@@ -82,8 +81,7 @@ export const NAV_SECTIONS: NavSection[] = [
 
 /** Accordion dışında, üstte sabit duran öğeler. */
 export const PINNED_NAV: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: SquaresFour, hotkey: 1, group: "pinned", desc: "Genel bakış: model/modül/endpoint metrikleri ve son aktiviteler." },
-  { to: "/ai-copilot", label: "AI Copilot", icon: Sparkle, hotkey: 2, group: "pinned", desc: "Doğal dilden şema, modül ve config üret. Panelin kalbi." },
+  { to: "/", label: "Dashboard", icon: SquaresFour, hotkey: 1, group: "pinned", desc: "Genel bakış + AI Copilot tek sayfada: metrikler, aktivite ve doğal dilden üretim." },
 ];
 
 export const NAV_ITEMS: NavItem[] = [
