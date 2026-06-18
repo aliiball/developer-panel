@@ -25,11 +25,11 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 border-b bg-background/50 px-6 py-4 md:flex-row md:items-center">
+    <div className="flex flex-col gap-3 border-b bg-background/50 px-6 py-4 md:flex-row md:items-center md:gap-4">
       <div className="min-w-0">
-        <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
+        <h1 className="text-[1.05rem] font-semibold tracking-tight">{title}</h1>
         {description && (
-          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{description}</p>
         )}
       </div>
       <div className="flex flex-wrap items-center gap-2 md:ml-auto">

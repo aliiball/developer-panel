@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import {
   MagnifyingGlass,
-  FunnelSimple,
   Columns,
   DownloadSimple,
   X,
@@ -119,16 +118,22 @@ export function FilterChip({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+        "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
         active
-          ? "border-primary/40 bg-primary/10 text-primary"
-          : "border-border bg-card text-muted-foreground hover:text-foreground",
+          ? "bg-primary/10 text-primary ring-1 ring-inset ring-primary/25"
+          : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
       )}
     >
-      <FunnelSimple className="size-3" weight={active ? "fill" : "regular"} />
       {children}
       {typeof count === "number" && (
-        <span className="rounded-full bg-background/60 px-1 tabular-nums">{count}</span>
+        <span
+          className={cn(
+            "rounded px-1 text-[10px] tabular-nums",
+            active ? "bg-primary/15" : "bg-foreground/5",
+          )}
+        >
+          {count}
+        </span>
       )}
     </button>
   );
