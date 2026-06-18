@@ -22,7 +22,7 @@ export default defineConfig({
       "react-dom",
       "react-dom/client",
       "react-router",
-      "lucide-react",
+      "@phosphor-icons/react",
       "recharts",
       "cmdk",
       "sonner",
