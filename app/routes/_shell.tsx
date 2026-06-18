@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import { LeftRail } from "~/components/shell/LeftRail";
+import { LeftRail, MobileNavDrawer } from "~/components/shell/LeftRail";
 import { Topbar } from "~/components/shell/Topbar";
 import { FixBar } from "~/components/shell/FixBar";
 import { Spotlight } from "~/components/shell/Spotlight";
@@ -25,7 +25,12 @@ function ShellInner() {
   useGlobalShortcuts();
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
-      <LeftRail />
+      {/* Desktop: inline sidebar */}
+      <div className="hidden md:flex">
+        <LeftRail />
+      </div>
+      {/* Mobil: kayan nav drawer */}
+      <MobileNavDrawer />
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
         <FixBar />

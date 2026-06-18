@@ -30,6 +30,11 @@ interface UIState {
   /** Single-open accordion: açık olan tek bölümün id'si. */
   openSection: string | null;
   setOpenSection: (id: string | null) => void;
+
+  /** Mobil: sol nav drawer açık mı (desktop'ta kullanılmaz). */
+  navOpen: boolean;
+  setNavOpen: (open: boolean) => void;
+  toggleNav: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -51,4 +56,8 @@ export const useUIStore = create<UIState>((set) => ({
       persist(SECTION_KEY, id ?? "");
       return { openSection: id };
     }),
+
+  navOpen: false,
+  setNavOpen: (open) => set({ navOpen: open }),
+  toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),
 }));

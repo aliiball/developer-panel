@@ -52,7 +52,14 @@ export function CopilotRail() {
   }
 
   return (
-    <aside className="z-20 flex h-full w-[340px] shrink-0 flex-col border-l bg-sidebar/60 backdrop-blur">
+    <>
+      {/* Mobil backdrop — dışına dokununca kapanır */}
+      <div
+        className="fixed inset-0 z-30 bg-black/40 md:hidden"
+        onClick={close}
+        aria-hidden
+      />
+      <aside className="fixed inset-y-0 right-0 z-40 flex h-full w-[340px] max-w-[85vw] shrink-0 flex-col border-l bg-sidebar/95 backdrop-blur md:static md:z-20 md:max-w-none md:bg-sidebar/60">
       <div className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
         <Sparkles className="size-4 text-primary" />
         <span className="text-sm font-semibold">Copilot</span>
@@ -128,6 +135,7 @@ export function CopilotRail() {
           <Send className="size-4" />
         </Button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

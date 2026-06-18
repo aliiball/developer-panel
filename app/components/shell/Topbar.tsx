@@ -6,6 +6,7 @@ import {
   Sun,
   Moon,
   Bell,
+  List,
 } from "@phosphor-icons/react";
 import { useUIStore } from "~/stores/ui-store";
 import { useCopilotStore } from "~/stores/copilot-store";
@@ -22,6 +23,7 @@ import { useTheme } from "~/components/shell/ThemeProvider";
 export function Topbar() {
   const setSpotlight = useUIStore((s) => s.setSpotlight);
   const setShortcuts = useUIStore((s) => s.setShortcuts);
+  const toggleNav = useUIStore((s) => s.toggleNav);
   const toggleRail = useCopilotStore((s) => s.toggleRail);
   const railOpen = useCopilotStore((s) => s.railOpen);
   const { isDark, toggle } = useTheme();
@@ -37,11 +39,20 @@ export function Topbar() {
     ) ?? ALL_NAV[0];
 
   return (
-    <header className="z-20 flex h-14 shrink-0 items-center gap-3 border-b bg-background/70 px-4 backdrop-blur">
-      <div className="flex items-center gap-2 text-sm">
-        <span className="font-semibold tracking-tight">MetaPanel</span>
-        <span className="text-muted-foreground">/</span>
-        <span className="text-muted-foreground">{current.label}</span>
+    <header className="z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background/70 px-3 backdrop-blur sm:gap-3 sm:px-4">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-9 md:hidden"
+        aria-label="Menüyü aç"
+        onClick={toggleNav}
+      >
+        <List className="size-[18px]" />
+      </Button>
+      <div className="flex min-w-0 items-center gap-2 text-sm">
+        <span className="hidden font-semibold tracking-tight sm:inline">MetaPanel</span>
+        <span className="hidden text-muted-foreground sm:inline">/</span>
+        <span className="truncate font-medium sm:font-normal sm:text-muted-foreground">{current.label}</span>
       </div>
 
       <button
@@ -69,9 +80,11 @@ export function Topbar() {
           </TooltipTrigger>
           <TooltipContent side="bottom">Bildirimler</TooltipContent>
         </Tooltip>
-        <IconButton label="Kısayollar (?)" onClick={() => setShortcuts(true)}>
-          <Keyboard className="size-[18px]" />
-        </IconButton>
+        <span className="hidden md:inline-flex">
+          <IconButton label="Kısayollar (?)" onClick={() => setShortcuts(true)}>
+            <Keyboard className="size-[18px]" />
+          </IconButton>
+        </span>
         <IconButton label={isDark ? "Açık tema" : "Koyu tema"} onClick={toggle}>
           {isDark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
         </IconButton>
@@ -87,7 +100,7 @@ export function Topbar() {
             }
           >
             <Sparkles className="size-4" />
-            Copilot
+            <span className="hidden sm:inline">Copilot</span>
           </TooltipTrigger>
           <TooltipContent side="bottom">Copilot panelini aç/kapat (⌘J)</TooltipContent>
         </Tooltip>

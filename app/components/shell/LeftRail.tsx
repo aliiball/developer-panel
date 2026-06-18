@@ -19,6 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTitle } from "~/components/ui/sheet";
 import { useUIStore } from "~/stores/ui-store";
 import { cn } from "~/lib/utils";
 
@@ -29,9 +30,10 @@ function isActive(to: string, pathname: string): boolean {
     : pathname === to || pathname.startsWith(to + "/");
 }
 
-export function LeftRail() {
+export function LeftRail({ mobile = false }: { mobile?: boolean } = {}) {
   const location = useLocation();
-  const collapsed = useUIStore((s) => s.sidebarCollapsed);
+  const collapsedStore = useUIStore((s) => s.sidebarCollapsed);
+  const collapsed = mobile ? false : collapsedStore;
   const toggle = useUIStore((s) => s.toggleSidebar);
   const openSection = useUIStore((s) => s.openSection);
   const setOpenSection = useUIStore((s) => s.setOpenSection);
@@ -45,8 +47,8 @@ export function LeftRail() {
   return (
     <nav
       className={cn(
-        "z-30 flex h-full shrink-0 flex-col border-r bg-sidebar/80 py-3 backdrop-blur transition-[width] duration-200",
-        collapsed ? "w-14 items-center" : "w-60",
+        "z-30 flex h-full shrink-0 flex-col bg-sidebar/80 py-3 backdrop-blur transition-[width] duration-200",
+        mobile ? "w-full" : cn("border-r", collapsed ? "w-14 items-center" : "w-60"),
       )}
     >
       {/* Marka + daralt/genişlet */}
@@ -68,17 +70,19 @@ export function LeftRail() {
             MetaPanel
           </span>
         )}
-        <button
-          onClick={toggle}
-          aria-label={collapsed ? "Menüyü genişlet" : "Menüyü daralt"}
-          className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-        >
-          {collapsed ? (
-            <CaretLineRight className="size-4" />
-          ) : (
-            <CaretLineLeft className="size-4" />
-          )}
-        </button>
+        {!mobile && (
+          <button
+            onClick={toggle}
+            aria-label={collapsed ? "Menüyü genişlet" : "Menüyü daralt"}
+            className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            {collapsed ? (
+              <CaretLineRight className="size-4" />
+            ) : (
+              <CaretLineLeft className="size-4" />
+            )}
+          </button>
+        )}
       </div>
 
       <div
@@ -120,6 +124,32 @@ export function LeftRail() {
         )}
       </div>
     </nav>
+  );
+}
+
+/* ── Mobil: sol nav drawer (Sheet) ────────────────────────────────── */
+
+export function MobileNavDrawer() {
+  const open = useUIStore((s) => s.navOpen);
+  const setOpen = useUIStore((s) => s.setNavOpen);
+  const { pathname } = useLocation();
+
+  // Rota değişince (nav öğesine dokununca) drawer kapanır.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname, setOpen]);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetContent
+        side="left"
+        showCloseButton={false}
+        className="w-72 max-w-[82vw] gap-0 border-r p-0 md:hidden"
+      >
+        <SheetTitle className="sr-only">Navigasyon</SheetTitle>
+        <LeftRail mobile />
+      </SheetContent>
+    </Sheet>
   );
 }
 
