@@ -316,41 +316,6 @@ export default function Forms() {
       />
 
       <PageBody grid={false} className="flex h-full flex-col gap-4">
-        {/* KPI şeridi */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <KpiCard
-            label="Toplam Alan"
-            value={fields.length}
-            icon={Stack}
-            hint="yapı dahil"
-            trend={[2, 4, 5, 7, 8, 9, fields.length || 1]}
-          />
-          <KpiCard
-            label="Girdi Alanı"
-            value={inputCount}
-            icon={ListChecks}
-            delta={inputCount > 0 ? 12 : undefined}
-            hint="veri toplayan"
-            trend={[1, 2, 3, 4, 5, inputCount || 1]}
-          />
-          <KpiCard
-            label="Zorunlu / Kural"
-            value={`${requiredCount} / ${ruleCount}`}
-            icon={Asterisk}
-            hint="validasyon"
-            trend={[0, 1, 2, ruleCount || 1]}
-          />
-          <KpiCard
-            label="Form Sağlığı"
-            value={`%${health}`}
-            icon={ShieldCheck}
-            delta={health >= 70 ? 8 : -6}
-            invert={false}
-            hint={health >= 70 ? "iyi" : "iyileştirilebilir"}
-            trend={[40, 55, 60, 72, health || 1]}
-          />
-        </div>
-
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[220px_1fr_300px]">
           {/* ── Palet (kategorili) ── */}
           <aside className="flex min-h-0 flex-col lg:border-r lg:pr-4">

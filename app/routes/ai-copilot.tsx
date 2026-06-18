@@ -158,24 +158,55 @@ export default function AICopilot() {
       <PageBody grid={empty} className={cn("flex h-full flex-col", empty && "min-h-full")}>
         {empty ? (
           <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 py-6">
-            {/* Hero */}
-            <div className="text-center">
+            {/* Hero + flagship composer — vitrin merkezde */}
+            <div className="mx-auto w-full max-w-2xl pt-4 text-center">
               <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
-                <Sparkles className="size-7" />
+                <Sparkles className="size-7" weight="fill" />
               </div>
-              <h2 className="text-xl font-semibold">Ne oluşturmak istersiniz?</h2>
-              <p className="mx-auto mt-1 max-w-lg text-sm text-muted-foreground">
-                Yetenek kartlarından başlayın, kütüphaneden bir örnek seçin ya da kendi isteğinizi
-                yazın. Her üretim önizlenir, tek tıkla uygulanır ve geçmişe işlenir.
+              <h2 className="text-2xl font-semibold tracking-tight">Ne oluşturmak istersiniz?</h2>
+              <p className="mx-auto mt-1.5 max-w-lg text-sm text-muted-foreground">
+                Bir şema, modül, form veya endpoint'i doğal dilde tarif edin. Her üretim
+                önce önizlenir — siz uygulayana kadar hiçbir şey değişmez.
               </p>
-            </div>
 
-            {/* KPI şeridi */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <KpiCard label="Toplam üretim" value={kpi.total} delta={28} trend={kpi.trendRuns} icon={Lightning} hint="bu hafta" />
-              <KpiCard label="Önizleme oranı" value={`${kpi.applyRate}%`} delta={6} trend={kpi.trendPreview} icon={CheckCircle} hint="uygulanabilir çıktı" />
-              <KpiCard label="Ort. yanıt süresi" value={`${kpi.avgMs}ms`} delta={-12} trend={kpi.trendLatency} icon={Cpu} invert hint="düşük iyi" />
-              <KpiCard label="Etkin yüzey" value={kpi.surfaces} delta={2} trend={kpi.trendSurfaces} icon={StackIcon} hint="tetiklenen sayfa" deltaSuffix="" />
+              {/* Büyük composer */}
+              <div className="mt-6 rounded-2xl border bg-card p-2 text-left shadow-sm ring-1 ring-foreground/[0.06] transition-shadow focus-within:ring-primary/40">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      submit();
+                    }
+                  }}
+                  rows={3}
+                  placeholder="Örn. “Blog için Post, Author ve Comment modellerini ilişkileriyle üret”"
+                  aria-label="Copilot'a ne oluşturmak istediğinizi yazın"
+                  className="mp-scroll max-h-44 w-full resize-none bg-transparent px-3 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                />
+                <div className="flex items-center justify-between gap-2 px-1 pb-0.5">
+                  <span className="flex items-center gap-1 px-1 text-[11px] text-muted-foreground">
+                    <Cpu className="size-3" /> metapanel-llm · önizleme önce
+                  </span>
+                  <Button size="sm" className="gap-1.5" onClick={() => submit()} disabled={!input.trim()}>
+                    Üret <Send className="size-3.5" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Hızlı başlangıç */}
+              <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                {PROMPT_LIBRARY.slice(0, 5).map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => submit(p.prompt)}
+                    className="rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Yetenek kartları */}
@@ -309,6 +340,17 @@ export default function AICopilot() {
                 </div>
               )}
             </section>
+
+            {/* Copilot bu hafta — sinyal (de-emphasize edilmiş, en altta) */}
+            <section className="space-y-3">
+              <SectionTitle icon={Lightning} title="Copilot bu hafta" sub="üretim sinyali" />
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <KpiCard label="Toplam üretim" value={kpi.total} delta={28} trend={kpi.trendRuns} icon={Lightning} hint="bu hafta" />
+                <KpiCard label="Önizleme oranı" value={`${kpi.applyRate}%`} delta={6} trend={kpi.trendPreview} icon={CheckCircle} hint="uygulanabilir çıktı" />
+                <KpiCard label="Ort. yanıt süresi" value={`${kpi.avgMs}ms`} delta={-12} trend={kpi.trendLatency} icon={Cpu} invert hint="düşük iyi" />
+                <KpiCard label="Etkin yüzey" value={kpi.surfaces} delta={2} trend={kpi.trendSurfaces} icon={StackIcon} hint="tetiklenen sayfa" deltaSuffix="" />
+              </div>
+            </section>
           </div>
         ) : (
           <div ref={scrollRef} className="mp-scroll mx-auto w-full max-w-2xl flex-1 space-y-5 overflow-y-auto pb-4">
@@ -350,7 +392,8 @@ export default function AICopilot() {
           </div>
         )}
 
-        {/* Composer */}
+        {/* Composer — yalnızca sohbet modunda (boşken hero composer kullanılır) */}
+        {!empty && (
         <div className="mx-auto mt-auto w-full max-w-2xl pt-2">
           {!empty && (
             <div className="mb-2 flex flex-wrap gap-1.5">
@@ -388,6 +431,7 @@ export default function AICopilot() {
             <kbd className="rounded border bg-muted px-1 font-mono text-[10px]">Enter</kbd> ile gönder · üretimler yalnızca önizlenir, siz uygulayana kadar bir şey değişmez.
           </p>
         </div>
+        )}
       </PageBody>
 
       {/* Geçmiş oturum detay drawer'ı */}

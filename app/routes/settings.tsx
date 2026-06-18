@@ -305,43 +305,6 @@ export default function Settings() {
       </PageHeader>
 
       <PageBody>
-        {/* Insight şeridi — konfigürasyon sağlığı */}
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <KpiCard
-            label="Konfigürasyon sağlığı"
-            value={`${configuredPct}%`}
-            delta={dirty ? -dirtyKeys.length : 4}
-            deltaSuffix=""
-            trend={[88, 90, 92, 91, 94, 96, configuredPct]}
-            icon={ShieldCheck}
-            hint="kaydedilmiş oran"
-          />
-          <KpiCard
-            label="Aktif AI modeli"
-            value={state.copilotModel.replace("claude-", "").replace(/-/g, " ")}
-            icon={Sparkle}
-            hint={`${state.contextWindow} bağlam`}
-          />
-          <KpiCard
-            label="Rate limit"
-            value={`${state.rateLimit}/dk`}
-            delta={state.rateLimit === DEFAULTS.rateLimit ? 0 : 100}
-            trend={[200, 300, 300, 450, 600, Number(state.rateLimit) || 600]}
-            icon={Lightning}
-            hint="API istek limiti"
-          />
-          <KpiCard
-            label="Bekleyen değişiklik"
-            value={dirtyKeys.length}
-            invert
-            delta={dirty ? dirtyKeys.length : 0}
-            deltaSuffix=""
-            icon={PencilSimple}
-            hint="kaydedilmemiş"
-            onClick={() => (dirty ? save() : toast.info("Tüm ayarlar kaydedilmiş"))}
-          />
-        </div>
-
         {dirty && (
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm">
             <Warning className="size-4 shrink-0 text-amber-400" />

@@ -567,39 +567,6 @@ export default function Terminal() {
         ]}
       />
       <PageBody grid={false} className="flex flex-col gap-4">
-        {/* KPI şeridi */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <KpiCard
-            label="Çalıştırılan komut"
-            value={stats.runs}
-            delta={stats.runs > 0 ? 12 : undefined}
-            trend={stats.trend}
-            icon={CommandIcon}
-            hint="tüm oturumlar"
-          />
-          <KpiCard
-            label="Başarı oranı"
-            value={`${stats.okRate}%`}
-            delta={stats.errs > 0 ? -stats.errs : 0}
-            icon={CheckCircle}
-            hint="hatasız çalışma"
-          />
-          <KpiCard
-            label="Ort. yürütme"
-            value={`${stats.avg}ms`}
-            trend={[120, 180, 90, 220, stats.avg || 100]}
-            icon={Pulse}
-            invert
-            hint="komut başına"
-          />
-          <KpiCard
-            label="Açık oturum"
-            value={stats.sessions}
-            icon={TerminalIcon}
-            hint={`${stats.errs} hata`}
-          />
-        </div>
-
         {/* Hızlı komutlar */}
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
