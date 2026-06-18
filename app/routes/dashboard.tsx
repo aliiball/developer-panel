@@ -42,7 +42,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { useCopilotStore } from "~/stores/copilot-store";
-import { CopilotComposer } from "~/components/dashboard/CopilotComposer";
+import { CopilotHub } from "~/components/dashboard/CopilotHub";
 import { toast } from "sonner";
 import { cn } from "~/lib/utils";
 import {
@@ -203,7 +203,7 @@ export default function Dashboard() {
         ]}
       />
       <PageBody className="space-y-5">
-        <CopilotComposer />
+        <CopilotHub />
         <InsightStrip />
 
         {/* Dönem seçimi + snapshot export */}

@@ -20,6 +20,51 @@ function hintFor(pathname: string) {
   return ROUTE_HINTS[pathname] ?? ROUTE_HINTS["/"];
 }
 
+// Son yanıtın türüne göre takip önerileri. Her öneri, mock router'ın
+// tanıdığı bir niyete denk gelecek şekilde seçilir (tıklayınca anlamlı
+// bir yanıt üretir).
+const FOLLOW_BY_KIND: Record<string, string[]> = {
+  models: ["CRUD endpoint üret", "SEO alanları ekle", "fiyat & stok alanı ekle"],
+  fields: ["Migration üret", "SEO alanları ekle", "İlgili formu oluştur"],
+  palette: ["Kontrastı kontrol et", "Koyu tema varyantı öner", "E-ticaret şeması üret"],
+  endpoints: ["Bu endpoint'i açıkla", "Rol izinleri öner", "Migration üret"],
+  form: ["Kayıt formuna çevir", "Bu form için endpoint üret", "İletişim formu oluştur"],
+  permissions: ["Bu rolü kaydet", "Editor için izin öner", "Başka rol öner"],
+  code: ["Bu migration'ı açıkla", "Migration üret", "Rol izinleri öner"],
+  triage: ["Kopyaları birleştir", "Kök neden analizi yap", "Sürüm notu üret"],
+  "release-notes": ["Sürüm notu üret", "Changelog üret", "Riskleri özetle"],
+};
+
+interface ChatLike {
+  role: string;
+  text: string;
+  preview?: { kind: string } | undefined;
+}
+
+function followUps(messages: ChatLike[], fallback: string[]): string[] {
+  const last = [...messages].reverse().find((m) => m.role === "assistant");
+  if (!last) return fallback;
+
+  if (last.preview?.kind && FOLLOW_BY_KIND[last.preview.kind])
+    return FOLLOW_BY_KIND[last.preview.kind];
+
+  const t = last.text.toLowerCase();
+  if (t.includes("checkout") || t.includes("p95"))
+    return ["Kök neden analizi yap", "Eksik index'leri göster", "Sağlık özeti"];
+  if (t.includes("crash-free") || t.includes("uptime"))
+    return ["Son 30 gün özeti", "Eksik index'leri göster", "Riskli flag'leri kontrol et"];
+  if (t.includes("b-tree") || t.includes("indeks öner"))
+    return ["Migration taslağı üret", "Sağlık özeti", "Son 30 gün özeti"];
+  if (
+    ["çözemedim", "niyet", "netleştir", "hangi alanı", "tek cümle", "tek satırda", "kastett"].some(
+      (k) => t.includes(k),
+    )
+  )
+    return ["E-ticaret şeması üret", "Blog şeması üret", "İletişim formu oluştur"];
+
+  return fallback;
+}
+
 export function CopilotRail() {
   const open = useCopilotStore((s) => s.railOpen);
   const close = useCopilotStore((s) => s.closeRail);
@@ -30,6 +75,8 @@ export function CopilotRail() {
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const ctx = hintFor(location.pathname);
+  // Alt öneri çipleri: son AI yanıtına göre değişir, yoksa route ipuçları.
+  const quick = followUps(messages, ctx.quick);
 
   // Consume a prompt queued from Spotlight / quick replies.
   useEffect(() => {
@@ -63,9 +110,6 @@ export function CopilotRail() {
       <div className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
         <Sparkles className="size-4 text-primary" />
         <span className="text-sm font-semibold">Copilot</span>
-        <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] text-accent-foreground">
-          bağlam-duyarlı
-        </span>
         <Button variant="ghost" size="icon" className="ml-auto size-7" onClick={close}>
           <X className="size-4" />
         </Button>
@@ -111,7 +155,7 @@ export function CopilotRail() {
 
       {/* Quick replies */}
       <div className="flex flex-wrap gap-1.5 border-t px-3 py-2">
-        {ctx.quick.map((q) => (
+        {quick.map((q) => (
           <button
             key={q}
             onClick={() => send(q)}
