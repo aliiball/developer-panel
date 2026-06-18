@@ -63,6 +63,7 @@ import {
   type AuditEvent,
 } from "~/components/enterprise";
 import { cn } from "~/lib/utils";
+import { toastUndo } from "~/lib/feedback";
 import { toast } from "sonner";
 
 export function meta() {
@@ -151,6 +152,9 @@ export default function Media() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [moveTo, setMoveTo] = useState<string>(MEDIA_FOLDERS[0]);
+  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [moving, setMoving] = useState(false);
 
   // ── türetilmiş veriler ──────────────────────────────────────────
   const counts = useMemo(() => {
@@ -221,34 +225,60 @@ export default function Media() {
   }
 
   function doDelete(ids: string[]) {
-    const removed = items.filter((m) => ids.includes(m.id));
-    setItems((prev) => prev.filter((m) => !ids.includes(m.id)));
-    clearSel();
-    setActive(null);
-    setConfirmDelete(false);
-    toast.success(`${ids.length} dosya silindi`, {
-      description: removed.map((m) => m.name).slice(0, 3).join(", ") + (ids.length > 3 ? "…" : ""),
-      action: {
-        label: "Geri al",
-        onClick: () => {
+    setDeleting(true);
+    setTimeout(() => {
+      const removed = items.filter((m) => ids.includes(m.id));
+      setItems((prev) => prev.filter((m) => !ids.includes(m.id)));
+      clearSel();
+      setActive(null);
+      setConfirmDelete(false);
+      setDeleting(false);
+      toastUndo(`${ids.length} dosya silindi`, {
+        description: removed.map((m) => m.name).slice(0, 3).join(", ") + (ids.length > 3 ? "…" : ""),
+        onUndo: () => {
           setItems((prev) => [...removed, ...prev]);
           toast.success("Silme geri alındı");
         },
-      },
-    });
+      });
+    }, 600);
   }
 
   function doMove(ids: string[], to: string) {
-    setItems((prev) => prev.map((m) => (ids.includes(m.id) ? { ...m, folder: to } : m)));
-    clearSel();
-    setMoveOpen(false);
-    toast.success(`${ids.length} dosya "${to}" klasörüne taşındı`);
+    setMoving(true);
+    setTimeout(() => {
+      const prevFolders = new Map(
+        items.filter((m) => ids.includes(m.id)).map((m) => [m.id, m.folder] as const),
+      );
+      setItems((prev) => prev.map((m) => (ids.includes(m.id) ? { ...m, folder: to } : m)));
+      clearSel();
+      setMoveOpen(false);
+      setMoving(false);
+      toastUndo(`${ids.length} dosya "${to}" klasörüne taşındı`, {
+        onUndo: () => {
+          setItems((prev) =>
+            prev.map((m) =>
+              prevFolders.has(m.id) ? { ...m, folder: prevFolders.get(m.id)! } : m,
+            ),
+          );
+          toast.success("Taşıma geri alındı");
+        },
+      });
+    }, 600);
   }
 
   function toggleStar(item: MediaRecord) {
     setItems((prev) => prev.map((m) => (m.id === item.id ? { ...m, starred: !m.starred } : m)));
     setActive((a) => (a && a.id === item.id ? { ...a, starred: !a.starred } : a));
     toast.success(item.starred ? "Favorilerden çıkarıldı" : "Favorilere eklendi");
+  }
+
+  function doUpload() {
+    if (uploading) return;
+    setUploading(true);
+    setTimeout(() => {
+      setUploading(false);
+      toast.success("Dosya yükleme tamamlandı (mock)");
+    }, 600);
   }
 
   function exportData() {
@@ -272,7 +302,7 @@ export default function Media() {
             label: "Yükle",
             icon: Upload,
             variant: "default",
-            onClick: () => toast.success("Dosya yükleme başlatıldı (mock)"),
+            onClick: doUpload,
           },
         ]}
       />
@@ -474,11 +504,15 @@ export default function Media() {
           <>
             {/* Upload dropzone */}
             <button
-              onClick={() => toast.info("Sürükle-bırak yükleme (mock)")}
-              className="flex w-full flex-col items-center gap-1.5 rounded-xl border border-dashed bg-card/50 py-6 text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+              onClick={doUpload}
+              disabled={uploading}
+              aria-busy={uploading || undefined}
+              className="flex w-full flex-col items-center gap-1.5 rounded-xl border border-dashed bg-card/50 py-6 text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-60"
             >
-              <Upload className="size-5" />
-              <span className="text-sm">Dosyaları buraya sürükle veya tıkla</span>
+              {uploading ? <ClockCounterClockwise className="size-5 animate-spin" /> : <Upload className="size-5" />}
+              <span className="text-sm">
+                {uploading ? "Yükleniyor…" : "Dosyaları buraya sürükle veya tıkla"}
+              </span>
             </button>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
               {filtered.map((m) => (
@@ -588,10 +622,10 @@ export default function Media() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => setConfirmDelete(false)}>
+            <Button variant="outline" size="sm" disabled={deleting} onClick={() => setConfirmDelete(false)}>
               İptal
             </Button>
-            <Button variant="destructive" size="sm" className="gap-1.5" onClick={() => doDelete([...selected])}>
+            <Button variant="destructive" size="sm" className="gap-1.5" loading={deleting} onClick={() => doDelete([...selected])}>
               <Trash className="size-3.5" /> {selCount} dosyayı sil
             </Button>
           </DialogFooter>
@@ -623,10 +657,10 @@ export default function Media() {
             </Select>
           </div>
           <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => setMoveOpen(false)}>
+            <Button variant="outline" size="sm" disabled={moving} onClick={() => setMoveOpen(false)}>
               İptal
             </Button>
-            <Button size="sm" className="gap-1.5" onClick={() => doMove([...selected], moveTo)}>
+            <Button size="sm" className="gap-1.5" loading={moving} onClick={() => doMove([...selected], moveTo)}>
               <FolderSimple className="size-3.5" /> Taşı
             </Button>
           </DialogFooter>

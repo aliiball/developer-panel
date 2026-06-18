@@ -32,6 +32,7 @@ import {
   type AuditEvent,
 } from "~/components/enterprise";
 import { Button } from "~/components/ui/button";
+import { useListNav } from "~/hooks/use-list-nav";
 import { cn } from "~/lib/utils";
 import {
   LOG_ENTRIES,
@@ -67,6 +68,9 @@ export default function Logs() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [active, setActive] = useState<LogEntry | null>(null);
   const [pinned, setPinned] = useState<Set<string>>(new Set());
+  // export/sabitle butonları için yükleniyor durumu
+  const [busyExport, setBusyExport] = useState(false);
+  const [busyPin, setBusyPin] = useState(false);
   // canlı akış simülasyonu için zaman damgası ofseti (yeniden render tetikler)
   const [tick, setTick] = useState(0);
   const streamRef = useRef<HTMLDivElement>(null);
@@ -148,6 +152,26 @@ export default function Logs() {
       description: `${win} penceresi · ${levels.size || "tüm"} seviye filtresi`,
     });
   };
+  // export'u görünür yükleniyor durumuyla sar (mock hazırlık gecikmesi)
+  const runExport = (rows: LogEntry[], fmt: "json" | "csv") => {
+    if (rows.length === 0) return toast.error("Dışa aktarılacak log yok.");
+    setBusyExport(true);
+    setTimeout(() => {
+      exportRows(rows, fmt);
+      setBusyExport(false);
+    }, 600);
+  };
+  // toplu sabitlemeyi görünür yükleniyor durumuyla sar
+  const runPinSelected = () => {
+    if (selected.size === 0) return;
+    setBusyPin(true);
+    const ids = [...selected];
+    setTimeout(() => {
+      ids.forEach((id) => togglePin(id));
+      setBusyPin(false);
+      toast.success(`${ids.length} satır sabitlendi`);
+    }, 600);
+  };
   const copyTrace = (id: string) => {
     toast.success("Trace ID kopyalandı", { description: id });
   };
@@ -158,6 +182,17 @@ export default function Logs() {
   };
 
   const hasFilter = q.trim() !== "" || levels.size > 0 || source !== "all";
+
+  // ── klavye gezinme (j/↓ · k/↑ · Enter satır detayı açar · Esc temizler)
+  const {
+    active: navActive,
+    setActive: setNavActive,
+    onKeyDown: onStreamKeyDown,
+    containerRef: streamNavRef,
+  } = useListNav(filtered.length, (i) => {
+    const row = filtered[i];
+    if (row) setActive(row);
+  });
 
   // ── drawer sekmeleri
   const drawerTabs: DrawerTab[] | undefined = active
@@ -242,7 +277,7 @@ export default function Logs() {
           search={q}
           onSearch={setQ}
           placeholder="Mesaj, kaynak, trace, path veya status ara…"
-          onExport={() => exportRows(filtered, "json")}
+          onExport={() => runExport(filtered, "json")}
         >
           {LEVELS.map((lv) => (
             <FilterChip
@@ -286,12 +321,13 @@ export default function Logs() {
             variant="ghost"
             size="sm"
             className="gap-1.5"
-            onClick={() => {
-              exportRows(
+            loading={busyExport}
+            onClick={() =>
+              runExport(
                 LOG_ENTRIES.filter((l) => selected.has(l.id)),
                 "json",
-              );
-            }}
+              )
+            }
           >
             <ShareNetwork className="size-3.5" /> Export
           </Button>
@@ -299,10 +335,8 @@ export default function Logs() {
             variant="ghost"
             size="sm"
             className="gap-1.5"
-            onClick={() => {
-              selected.forEach((id) => togglePin(id));
-              toast.success(`${selected.size} satır sabitlendi`);
-            }}
+            loading={busyPin}
+            onClick={runPinSelected}
           >
             <ListChecks className="size-3.5" /> Sabitle
           </Button>
@@ -342,8 +376,13 @@ export default function Logs() {
           />
         ) : (
           <div
-            ref={streamRef}
-            className="mp-scroll max-h-[calc(100vh-22rem)] overflow-y-auto rounded-xl border bg-[#0b0b0e] p-1.5 font-mono text-xs"
+            ref={(node) => {
+              streamRef.current = node;
+              streamNavRef.current = node;
+            }}
+            tabIndex={0}
+            onKeyDown={onStreamKeyDown}
+            className="mp-scroll max-h-[calc(100vh-22rem)] overflow-y-auto rounded-xl border bg-[#0b0b0e] p-1.5 font-mono text-xs outline-none"
           >
             <div className="flex items-center justify-between px-2 py-1 text-[10px]">
               <span
@@ -361,21 +400,26 @@ export default function Logs() {
                 {live ? "canlı akış · tail -f" : "akış duraklatıldı"}
               </span>
               <span className="tabular-nums text-muted-foreground">
+                <span className="mr-1.5 hidden sm:inline">↑↓ gez · Enter aç</span>
                 {filtered.length} satır {live && tick > 0 ? `· ${tick} güncelleme` : ""}
               </span>
             </div>
 
-            {filtered.map((l) => {
+            {filtered.map((l, i) => {
               const meta = LEVEL_META[l.level];
               const isSel = selected.has(l.id);
               const isPin = pinned.has(l.id);
+              const isNav = navActive === i;
               return (
                 <div
                   key={l.id}
+                  data-nav-index={i}
+                  onMouseEnter={() => setNavActive(i)}
                   className={cn(
                     "group flex items-start gap-2 rounded px-2 py-1 transition-colors hover:bg-white/5",
                     isSel && "bg-primary/10",
                     isPin && "ring-1 ring-inset ring-amber-500/30",
+                    isNav && "bg-accent/40 ring-1 ring-inset ring-primary/40",
                   )}
                 >
                   <input
@@ -476,7 +520,8 @@ export default function Logs() {
               <Button
                 size="sm"
                 className="ml-auto gap-1.5"
-                onClick={() => exportRows([active], "json")}
+                loading={busyExport}
+                onClick={() => runExport([active], "json")}
               >
                 <ShareNetwork className="size-3.5" /> Export
               </Button>

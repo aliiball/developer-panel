@@ -35,6 +35,8 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { cn } from "~/lib/utils";
 import { toast } from "sonner";
+import { toastUndo } from "~/lib/feedback";
+import { useListNav } from "~/hooks/use-list-nav";
 import {
   EmptyState,
   TableSkeleton,
@@ -206,6 +208,10 @@ export default function Data() {
 
   const [drawerRow, setDrawerRow] = useState<Row | null>(null);
 
+  // Async/yıkıcı aksiyon yükleniyor durumları
+  const [busyDelete, setBusyDelete] = useState(false);
+  const [busyImport, setBusyImport] = useState(false);
+
   // Inline edit state
   const [editing, setEditing] = useState<{ id: number; field: string } | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -230,6 +236,12 @@ export default function Data() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
   const paged = filtered.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+
+  /* ── Klavye gezinme (j/↓, k/↑, Enter drawer açar, Esc temizler) ── */
+  const { active, setActive, onKeyDown, containerRef } = useListNav(
+    paged.length,
+    (i) => paged[i] && setDrawerRow(paged[i]),
+  );
 
   /* ── KPI'lar ── */
   const kpis = useMemo(() => {
@@ -273,32 +285,31 @@ export default function Data() {
   }
 
   function bulkDelete() {
+    if (busyDelete || selected.size === 0) return;
     const ids = new Set(selected);
     const removed = rows.filter((r) => ids.has(r.id));
-    setRows((prev) => prev.filter((r) => !ids.has(r.id)));
-    setSelected(new Set());
-    toast.success(`${removed.length} kayıt silindi`, {
-      description: `${model?.name} · geri almak için bekleyin`,
-      action: {
-        label: "Geri al",
-        onClick: () => {
+    setBusyDelete(true);
+    setTimeout(() => {
+      setRows((prev) => prev.filter((r) => !ids.has(r.id)));
+      setSelected(new Set());
+      setBusyDelete(false);
+      toastUndo(`${removed.length} kayıt silindi`, {
+        description: `${model?.name} · geri almak için bekleyin`,
+        onUndo: () => {
           setRows((prev) => [...removed, ...prev].sort((a, b) => a.id - b.id));
           toast.info(`${removed.length} kayıt geri yüklendi`);
         },
-      },
-    });
+      });
+    }, 600);
   }
 
   function deleteOne(row: Row) {
     setRows((prev) => prev.filter((r) => r.id !== row.id));
     setDrawerRow(null);
-    toast.success(`#${row.id} silindi`, {
-      action: {
-        label: "Geri al",
-        onClick: () => {
-          setRows((prev) => [row, ...prev].sort((a, b) => a.id - b.id));
-          toast.info(`#${row.id} geri yüklendi`);
-        },
+    toastUndo(`#${row.id} silindi`, {
+      onUndo: () => {
+        setRows((prev) => [row, ...prev].sort((a, b) => a.id - b.id));
+        toast.info(`#${row.id} geri yüklendi`);
       },
     });
   }
@@ -343,7 +354,12 @@ export default function Data() {
   }
 
   function importData() {
-    toast.info("CSV/JSON import sihirbazı", { description: `${model?.tableName} · alan eşleme adımı (mock)` });
+    if (busyImport) return;
+    setBusyImport(true);
+    setTimeout(() => {
+      setBusyImport(false);
+      toast.info("CSV/JSON import sihirbazı", { description: `${model?.tableName} · alan eşleme adımı (mock)` });
+    }, 600);
   }
 
   const colKey = (f: SchemaField) => f.name;
@@ -561,18 +577,36 @@ export default function Data() {
             size="sm"
             className="h-7 gap-1.5"
             onClick={() => {
+              const ids = new Set(selected);
+              const prevStatus = new Map(rows.filter((r) => ids.has(r.id)).map((r) => [r.id, r._status]));
+              const count = ids.size;
               setRows((prev) =>
                 prev.map((r) =>
-                  selected.has(r.id) ? { ...r, _status: "archived", _updatedAt: "az önce" } : r,
+                  ids.has(r.id) ? { ...r, _status: "archived", _updatedAt: "az önce" } : r,
                 ),
               );
-              toast.success(`${selected.size} kayıt arşivlendi`);
               setSelected(new Set());
+              toastUndo(`${count} kayıt arşivlendi`, {
+                onUndo: () => {
+                  setRows((prev) =>
+                    prev.map((r) =>
+                      prevStatus.has(r.id) ? { ...r, _status: prevStatus.get(r.id)! } : r,
+                    ),
+                  );
+                  toast.info(`${count} kayıt geri yüklendi`);
+                },
+              });
             }}
           >
             <CloudArrowUp className="size-3.5" /> Arşivle
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-red-400 hover:text-red-300" onClick={bulkDelete}>
+          <Button
+            variant="ghost"
+            size="sm"
+            loading={busyDelete}
+            className="h-7 gap-1.5 text-red-400 hover:text-red-300"
+            onClick={bulkDelete}
+          >
             <Trash className="size-3.5" /> Sil
           </Button>
         </BulkBar>
@@ -614,7 +648,15 @@ export default function Data() {
           )
         ) : (
           <div className="overflow-hidden rounded-xl border bg-card">
-            <div className="overflow-x-auto">
+            <div className="flex items-center justify-end border-b bg-muted/20 px-3 py-1.5 text-[10px] text-muted-foreground/70">
+              <span className="font-mono">↑↓ gez · Enter aç · Esc temizle</span>
+            </div>
+            <div
+              ref={containerRef}
+              tabIndex={0}
+              onKeyDown={onKeyDown}
+              className="overflow-x-auto outline-none"
+            >
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-muted/30 text-left text-xs text-muted-foreground">
@@ -642,14 +684,17 @@ export default function Data() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paged.map((r) => {
+                  {paged.map((r, i) => {
                     const isSel = selected.has(r.id);
                     return (
                       <tr
                         key={r.id}
+                        data-nav-index={i}
+                        onMouseEnter={() => setActive(i)}
                         className={cn(
                           "border-b transition-colors last:border-0 hover:bg-accent/30",
                           isSel && "bg-primary/5",
+                          active === i && "bg-accent/40 ring-1 ring-inset ring-primary/40",
                         )}
                       >
                         <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>

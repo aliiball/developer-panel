@@ -25,6 +25,7 @@ import {
   ClockCounterClockwise,
   Key,
   Lightning,
+  Spinner,
 } from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { useTheme } from "~/components/shell/ThemeProvider";
@@ -168,6 +169,9 @@ export default function Settings() {
   const [confirmRotate, setConfirmRotate] = useState(false);
   const [confirmWipe, setConfirmWipe] = useState(false);
   const [wipeText, setWipeText] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [rotating, setRotating] = useState(false);
+  const [wiping, setWiping] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [apiKey, setApiKey] = useState("mp_live_sk_9f2a7c41b8e3d6a0f1c4b7e2");
   const lastSaved = useRef("Bugün 14:02");
@@ -204,31 +208,43 @@ export default function Settings() {
   }
 
   function resetDefaults() {
-    setState(DEFAULTS);
-    setConfirmReset(false);
-    toast.warning("Tüm ayarlar varsayılana döndürüldü", {
-      description: "Kaydetmeden çıkarsan eski değerler korunur.",
-    });
+    setResetting(true);
+    setTimeout(() => {
+      setState(DEFAULTS);
+      setResetting(false);
+      setConfirmReset(false);
+      toast.warning("Tüm ayarlar varsayılana döndürüldü", {
+        description: "Kaydetmeden çıkarsan eski değerler korunur.",
+      });
+    }, 600);
   }
 
   function rotateKey() {
-    const fresh =
-      "mp_live_sk_" +
-      Array.from({ length: 24 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
-    setApiKey(fresh);
-    setConfirmRotate(false);
-    setShowKey(true);
-    toast.success("API anahtarı rotate edildi", {
-      description: "Eski anahtar 24 saat sonra geçersiz olacak.",
-    });
+    setRotating(true);
+    setTimeout(() => {
+      const fresh =
+        "mp_live_sk_" +
+        Array.from({ length: 24 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
+      setApiKey(fresh);
+      setRotating(false);
+      setConfirmRotate(false);
+      setShowKey(true);
+      toast.success("API anahtarı rotate edildi", {
+        description: "Eski anahtar 24 saat sonra geçersiz olacak.",
+      });
+    }, 600);
   }
 
   function wipe() {
-    setConfirmWipe(false);
-    setWipeText("");
-    toast.error("Workspace silme talebi alındı (mock)", {
-      description: "Gerçek bir kurulumda 14 gün geri-alma penceresi başlardı.",
-    });
+    setWiping(true);
+    setTimeout(() => {
+      setWiping(false);
+      setConfirmWipe(false);
+      setWipeText("");
+      toast.error("Workspace silme talebi alındı (mock)", {
+        description: "Gerçek bir kurulumda 14 gün geri-alma penceresi başlardı.",
+      });
+    }, 600);
   }
 
   // KPI insight'ları (settings için: konfigürasyon sağlığı/durumu)
@@ -283,7 +299,7 @@ export default function Settings() {
           <ArrowCounterClockwise className="size-4" /> Geri al
         </Button>
         <Button size="sm" className="gap-1.5" disabled={!dirty || saving} onClick={save}>
-          <FloppyDisk className="size-4" />
+          {saving ? <Spinner className="size-4 animate-spin" /> : <FloppyDisk className="size-4" />}
           {saving ? "Kaydediliyor…" : dirty ? `Kaydet (${dirtyKeys.length})` : "Kaydedildi"}
         </Button>
       </PageHeader>
@@ -341,7 +357,8 @@ export default function Settings() {
                 Geri al
               </Button>
               <Button size="sm" className="h-7 gap-1 text-xs" disabled={saving} onClick={save}>
-                <FloppyDisk className="size-3.5" /> Kaydet
+                {saving ? <Spinner className="size-3.5 animate-spin" /> : <FloppyDisk className="size-3.5" />}
+                Kaydet
               </Button>
             </div>
           </div>
@@ -622,6 +639,7 @@ export default function Settings() {
         desc="Tüm ayarlar fabrika değerlerine döner. Kaydetmeden çıkarsan mevcut değerlerin korunur."
         cta="Sıfırla"
         onConfirm={resetDefaults}
+        busy={resetting}
       />
 
       {/* Rotate onay */}
@@ -633,10 +651,11 @@ export default function Settings() {
         desc="Yeni bir anahtar oluşturulur. Eski anahtar 24 saat sonra geçersiz olur — entegrasyonlarını güncelle."
         cta="Rotate et"
         onConfirm={rotateKey}
+        busy={rotating}
       />
 
       {/* Wipe onay (yazarak doğrulama) */}
-      <Dialog open={confirmWipe} onOpenChange={setConfirmWipe}>
+      <Dialog open={confirmWipe} onOpenChange={(v) => !wiping && setConfirmWipe(v)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-400">
@@ -651,18 +670,21 @@ export default function Settings() {
             onChange={(e) => setWipeText(e.target.value)}
             placeholder={state.workspaceName}
             className="h-8 font-mono text-xs"
+            disabled={wiping}
           />
           <DialogFooter>
-            <Button variant="ghost" size="sm" onClick={() => { setConfirmWipe(false); setWipeText(""); }}>
+            <Button variant="ghost" size="sm" disabled={wiping} onClick={() => { setConfirmWipe(false); setWipeText(""); }}>
               Vazgeç
             </Button>
             <Button
               variant="destructive"
               size="sm"
-              disabled={wipeText !== state.workspaceName}
+              className="gap-1.5"
+              disabled={wipeText !== state.workspaceName || wiping}
               onClick={wipe}
             >
-              Kalıcı sil
+              {wiping && <Spinner className="size-3.5 animate-spin" />}
+              {wiping ? "Siliniyor…" : "Kalıcı sil"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -821,6 +843,7 @@ function ConfirmDialog({
   desc,
   cta,
   onConfirm,
+  busy = false,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -829,9 +852,10 @@ function ConfirmDialog({
   desc: string;
   cta: string;
   onConfirm: () => void;
+  busy?: boolean;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(v) => !busy && onOpenChange(v)}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -840,11 +864,12 @@ function ConfirmDialog({
           <DialogDescription>{desc}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" size="sm" disabled={busy} onClick={() => onOpenChange(false)}>
             Vazgeç
           </Button>
-          <Button size="sm" onClick={onConfirm}>
-            {cta}
+          <Button size="sm" className="gap-1.5" disabled={busy} onClick={onConfirm}>
+            {busy && <Spinner className="size-3.5 animate-spin" />}
+            {busy ? "İşleniyor…" : cta}
           </Button>
         </DialogFooter>
       </DialogContent>

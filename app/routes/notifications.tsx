@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
+import { toastUndo } from "~/lib/feedback";
+import { useListNav } from "~/hooks/use-list-nav";
 import {
   RocketLaunch as Rocket,
   Warning as AlertTriangle,
@@ -18,6 +20,7 @@ import {
   SlidersHorizontal,
   Lightning,
   ArrowUpRight,
+  CircleNotch,
   type Icon,
 } from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
@@ -149,6 +152,7 @@ export default function Notifications() {
   const [showArchived, setShowArchived] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+  const [savingPrefs, setSavingPrefs] = useState(false);
 
   const isRead = (n: FeedItem) => readOverride[n.id] ?? n.read;
 
@@ -178,6 +182,16 @@ export default function Notifications() {
     return BUCKET_ORDER.filter((b) => map.has(b)).map((b) => ({ bucket: b, items: map.get(b)! }));
   }, [visible]);
 
+  // Klavye gezinmesi: gruplar yalnız görsel; index'ler düz "visible" sırasına göre global.
+  const openRow = (n: FeedItem) => { doMarkRead(n.id); setOpenId(n.id); };
+  const { active: navActive, setActive: setNavActive, onKeyDown, containerRef } =
+    useListNav(visible.length, (i) => { const row = visible[i]; if (row) openRow(row); });
+  const navIndexOf = useMemo(() => {
+    const m = new Map<string, number>();
+    visible.forEach((n, i) => m.set(n.id, i));
+    return m;
+  }, [visible]);
+
   // KPI metrikleri:
   const liveFeed = baseFeed.filter((n) => !archived.has(n.id));
   const unread = liveFeed.filter((n) => !isRead(n)).length;
@@ -193,41 +207,60 @@ export default function Notifications() {
   };
   const toggleRead = (n: FeedItem) => {
     const next = !isRead(n);
+    const prev = readOverride[n.id]; // önceki override (undefined = store değeri)
     setReadOverride((p) => ({ ...p, [n.id]: next }));
     if (next) markRead(n.id);
-    toast.success(next ? "Okundu olarak işaretlendi" : "Okunmadı olarak işaretlendi");
+    toastUndo(next ? "Okundu olarak işaretlendi" : "Okunmadı olarak işaretlendi", {
+      description: n.title,
+      onUndo: () =>
+        setReadOverride((p) => {
+          const s = { ...p };
+          if (prev === undefined) delete s[n.id];
+          else s[n.id] = prev;
+          return s;
+        }),
+    });
   };
   const archiveOne = (id: string) => {
     setArchived((p) => new Set(p).add(id));
     setSelected((p) => { const s = new Set(p); s.delete(id); return s; });
-    toast("Bildirim arşivlendi", {
-      action: {
-        label: "Geri al",
-        onClick: () => setArchived((p) => { const s = new Set(p); s.delete(id); return s; }),
-      },
+    toastUndo("Bildirim arşivlendi", {
+      onUndo: () => setArchived((p) => { const s = new Set(p); s.delete(id); return s; }),
     });
   };
   const onMarkAllRead = () => {
+    const prevOverride = readOverride; // geri-al için önceki override durumu
+    const prevUnread = liveFeed.filter((n) => !isRead(n)).length;
     markAllRead();
     const all: Record<string, boolean> = {};
     baseFeed.forEach((n) => (all[n.id] = true));
     setReadOverride((p) => ({ ...p, ...all }));
-    toast.success("Tüm bildirimler okundu işaretlendi");
+    toastUndo("Tüm bildirimler okundu işaretlendi", {
+      description: `${prevUnread} bildirim okundu olarak işaretlendi`,
+      onUndo: () => setReadOverride(prevOverride),
+    });
   };
 
   // Toplu işlemler:
   const toggleSelect = (id: string) =>
     setSelected((p) => { const s = new Set(p); s.has(id) ? s.delete(id) : s.add(id); return s; });
   const bulkRead = () => {
+    const prevOverride = readOverride; // geri-al için önceki override durumu
+    const n = selected.size;
     selected.forEach((id) => doMarkRead(id));
-    toast.success(`${selected.size} bildirim okundu işaretlendi`);
     setSelected(new Set());
+    toastUndo(`${n} bildirim okundu işaretlendi`, {
+      onUndo: () => setReadOverride(prevOverride),
+    });
   };
   const bulkArchive = () => {
-    const n = selected.size;
-    setArchived((p) => { const s = new Set(p); selected.forEach((id) => s.add(id)); return s; });
+    const ids = [...selected]; // geri-al için arşivlenenler
+    const n = ids.length;
+    setArchived((p) => { const s = new Set(p); ids.forEach((id) => s.add(id)); return s; });
     setSelected(new Set());
-    toast.success(`${n} bildirim arşivlendi`);
+    toastUndo(`${n} bildirim arşivlendi`, {
+      onUndo: () => setArchived((p) => { const s = new Set(p); ids.forEach((id) => s.delete(id)); return s; }),
+    });
   };
 
   const onExport = () => {
@@ -236,6 +269,16 @@ export default function Notifications() {
 
   const setPrefChannel = (t: NotificationType, v: boolean) =>
     setPrefs((p) => ({ ...p, channel: { ...p.channel, [t]: v } }));
+
+  // Tercih kaydı: anlık mock — yükleniyor durumu görünür olsun diye kısa gecikme.
+  const savePrefs = () => {
+    setSavingPrefs(true);
+    setTimeout(() => {
+      setSavingPrefs(false);
+      setPrefsOpen(false);
+      toast.success("Tercihler kaydedildi");
+    }, 600);
+  };
 
   const openItem = openId ? baseFeed.find((n) => n.id === openId) ?? null : null;
 
@@ -349,7 +392,15 @@ export default function Notifications() {
               />
             )
           ) : (
-            <div className="space-y-5">
+            <div
+              ref={containerRef}
+              tabIndex={0}
+              onKeyDown={onKeyDown}
+              className="space-y-5 outline-none"
+            >
+              <p className="px-1 text-[11px] text-muted-foreground/60">
+                ↑↓ gez · Enter aç · Esc temizle
+              </p>
               {grouped.map(({ bucket, items }) => (
                 <section key={bucket} className="space-y-1.5">
                   <div className="flex items-center gap-2 px-1">
@@ -362,13 +413,17 @@ export default function Notifications() {
                     const M = META[n.type];
                     const read = isRead(n);
                     const sel = selected.has(n.id);
+                    const idx = navIndexOf.get(n.id) ?? -1;
                     return (
                       <div
                         key={n.id}
+                        data-nav-index={idx}
+                        onMouseEnter={() => setNavActive(idx)}
                         className={cn(
                           "group/row flex items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-accent/40",
                           !read && "border-primary/20 bg-primary/[0.03]",
                           sel && "border-primary/50 bg-primary/[0.06]",
+                          navActive === idx && "ring-1 ring-inset ring-primary/40 bg-accent/40",
                         )}
                       >
                         <input
@@ -540,8 +595,9 @@ export default function Notifications() {
               <Button variant="ghost" size="sm" onClick={() => { setPrefs(DEFAULT_PREFS); toast("Varsayılanlara döndürüldü"); }}>
                 Varsayılana dön
               </Button>
-              <Button size="sm" className="bg-primary" onClick={() => { setPrefsOpen(false); toast.success("Tercihler kaydedildi"); }}>
-                Kaydet
+              <Button size="sm" className="bg-primary" disabled={savingPrefs} onClick={savePrefs}>
+                {savingPrefs && <CircleNotch className="size-4 animate-spin" />}
+                {savingPrefs ? "Kaydediliyor…" : "Kaydet"}
               </Button>
             </div>
           }

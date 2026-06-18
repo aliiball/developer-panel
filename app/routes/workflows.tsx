@@ -47,6 +47,8 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Switch } from "~/components/ui/switch";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import { toastUndo } from "~/lib/feedback";
+import { useListNav } from "~/hooks/use-list-nav";
 import { cn } from "~/lib/utils";
 
 export function meta() {
@@ -91,6 +93,7 @@ export default function Workflows() {
   const [onlyActive, setOnlyActive] = useState<boolean | null>(null);
   const [cat, setCat] = useState<WorkflowCategory | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [busyRun, setBusyRun] = useState<string | null>(null);
 
   const queuePrompt = useCopilotStore((s) => s.queuePrompt);
 
@@ -125,6 +128,11 @@ export default function Workflows() {
     });
   }, [list, search, onlyActive, cat]);
 
+  const { active: navActive, setActive: setNavActive, onKeyDown, containerRef } = useListNav(
+    filtered.length,
+    (i) => openDetail(filtered[i].id),
+  );
+
   const active = list.find((w) => w.id === activeId) ?? list[0];
   const activeMeta = metaFor(active.id);
 
@@ -138,11 +146,14 @@ export default function Workflows() {
   }, [list]);
 
   function toggle(id: string, next?: boolean) {
-    setList((p) => p.map((w) => (w.id === id ? { ...w, active: next ?? !w.active } : w)));
     const wf = list.find((w) => w.id === id);
-    const nowActive = next ?? !(wf?.active ?? false);
-    toast.success(nowActive ? "Workflow etkinleştirildi" : "Workflow duraklatıldı", {
+    const prev = wf?.active ?? false;
+    const nowActive = next ?? !prev;
+    setList((p) => p.map((w) => (w.id === id ? { ...w, active: nowActive } : w)));
+    toastUndo(nowActive ? "Workflow etkinleştirildi" : "Workflow duraklatıldı", {
       description: wf?.name,
+      onUndo: () =>
+        setList((p) => p.map((w) => (w.id === id ? { ...w, active: prev } : w))),
     });
   }
 
@@ -160,8 +171,15 @@ export default function Workflows() {
   }
 
   function bulkToggle(next: boolean) {
-    setList((p) => p.map((w) => (selected.has(w.id) ? { ...w, active: next } : w)));
-    toast.success(`${selected.size} workflow ${next ? "etkinleştirildi" : "duraklatıldı"}`);
+    const ids = new Set(selected);
+    const prevById = new Map(list.filter((w) => ids.has(w.id)).map((w) => [w.id, w.active]));
+    setList((p) => p.map((w) => (ids.has(w.id) ? { ...w, active: next } : w)));
+    toastUndo(`${ids.size} workflow ${next ? "etkinleştirildi" : "duraklatıldı"}`, {
+      onUndo: () =>
+        setList((p) =>
+          p.map((w) => (prevById.has(w.id) ? { ...w, active: prevById.get(w.id)! } : w)),
+        ),
+    });
     setSelected(new Set());
   }
 
@@ -171,7 +189,11 @@ export default function Workflows() {
 
   function runNow(id: string) {
     const wf = list.find((w) => w.id === id);
-    toast.success("Manuel çalıştırma kuyruğa alındı", { description: wf?.name });
+    setBusyRun(id);
+    setTimeout(() => {
+      setBusyRun(null);
+      toast.success("Manuel çalıştırma kuyruğa alındı", { description: wf?.name });
+    }, 600);
   }
 
   const resetFilters = () => {
@@ -346,18 +368,31 @@ export default function Workflows() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.15fr]">
             {/* Liste */}
             <div className="space-y-2">
-              {filtered.map((w) => {
+              <p className="px-1 text-[10px] text-muted-foreground/70">
+                ↑↓ gez · Enter aç · Esc temizle
+              </p>
+              <div
+                ref={containerRef}
+              tabIndex={0}
+              onKeyDown={onKeyDown}
+              className="space-y-2 outline-none"
+            >
+              {filtered.map((w, i) => {
                 const m = metaFor(w.id);
                 const isActiveRow = w.id === activeId;
                 const isSel = selected.has(w.id);
+                const isNav = navActive === i;
                 return (
                   <Card
                     key={w.id}
+                    data-nav-index={i}
+                    onMouseEnter={() => setNavActive(i)}
                     onClick={() => openDetail(w.id)}
                     className={cn(
                       "cursor-pointer transition-colors",
                       isActiveRow ? "border-primary/40" : "hover:border-primary/20",
                       isSel && "ring-1 ring-primary/40",
+                      isNav && "bg-accent/40 ring-1 ring-inset ring-primary/40",
                     )}
                   >
                     <CardContent className="flex items-center gap-3 p-3">
@@ -403,6 +438,7 @@ export default function Workflows() {
                   </Card>
                 );
               })}
+              </div>
             </div>
 
             {/* Adım zinciri önizleme */}
@@ -419,7 +455,13 @@ export default function Workflows() {
                     <p className="mt-0.5 truncate font-mono text-xs text-muted-foreground">{active.trigger}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
-                    <Button size="xs" variant="outline" className="gap-1" onClick={() => runNow(active.id)}>
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      className="gap-1"
+                      loading={busyRun === active.id}
+                      onClick={() => runNow(active.id)}
+                    >
                       <ArrowsClockwise className="size-3.5" /> Çalıştır
                     </Button>
                     <Button size="xs" variant="outline" className="gap-1" onClick={() => openDetail(active.id)}>
@@ -461,7 +503,13 @@ export default function Workflows() {
               <Switch checked={active.active} onCheckedChange={(v) => toggle(active.id, v)} />
               {active.active ? "Etkin" : "Duraklatıldı"}
             </label>
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => runNow(active.id)}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              loading={busyRun === active.id}
+              onClick={() => runNow(active.id)}
+            >
               <ArrowsClockwise className="size-4" /> Şimdi çalıştır
             </Button>
           </div>

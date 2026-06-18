@@ -63,6 +63,8 @@ import {
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 import { toast } from "sonner";
+import { toastUndo } from "~/lib/feedback";
+import { useListNav } from "~/hooks/use-list-nav";
 
 export function meta() {
   return [{ title: "Releases — MetaPanel" }];
@@ -131,6 +133,11 @@ export default function Releases() {
   const [promoteEnv, setPromoteEnv] = useState<EnvName | null>(null);
   const [rollbackTarget, setRollbackTarget] = useState<Deployment | null>(null);
 
+  // Akış: async/yıkıcı aksiyon yükleniyor durumları
+  const [busyDeploy, setBusyDeploy] = useState<EnvName | null>(null);
+  const [busyPromote, setBusyPromote] = useState(false);
+  const [busyRollback, setBusyRollback] = useState(false);
+
   // Kolon görünürlüğü
   const [cols, setCols] = useState<Record<string, boolean>>({
     env: true, status: true, commit: true, sla: true, trigger: true, meta: true,
@@ -176,6 +183,15 @@ export default function Releases() {
   const filtersActive = query !== "" || envFilter !== "all" || statusFilter !== "all";
   const drawerDeploy = drawerId ? deployments.find((d) => d.id === drawerId) ?? null : null;
 
+  // Akış: deploy geçmişi satırlarında klavye gezinme (j/↓ · k/↑ · Enter aç · Esc temizle)
+  const { active, setActive, onKeyDown, containerRef } = useListNav(
+    filtered.length,
+    (i) => {
+      const row = filtered[i];
+      if (row) setDrawerId(row.id);
+    },
+  );
+
   function runDeploy(env: EnvName) {
     deploy(env, pending);
     markReleased(readySets.map((c) => c.issueId));
@@ -184,24 +200,45 @@ export default function Releases() {
     });
   }
 
+  // EnvCard'tan tetiklenen doğrudan deploy (non-prod) — yükleniyor durumlu.
+  function startDeploy(env: EnvName) {
+    setBusyDeploy(env);
+    setTimeout(() => {
+      runDeploy(env);
+      setBusyDeploy(null);
+    }, 600);
+  }
+
   function confirmPromote() {
     if (!promoteEnv) return;
-    runDeploy(promoteEnv);
-    setPromoteEnv(null);
+    const env = promoteEnv;
+    setBusyPromote(true);
+    setTimeout(() => {
+      runDeploy(env);
+      setBusyPromote(false);
+      setPromoteEnv(null);
+    }, 600);
   }
 
   function confirmRollback() {
     if (!rollbackTarget) return;
     const d = rollbackTarget;
-    rollback(d.id);
-    setRollbackTarget(null);
-    toast.success("Geri alma tetiklendi", {
-      description: `${d.version} (${ENV_LABEL[d.env]}) önceki kararlı sürüme dönülüyor`,
-      action: {
-        label: "Geri Al",
-        onClick: () => toast.info("Rollback iptal edildi (mock)"),
-      },
-    });
+    setBusyRollback(true);
+    setTimeout(() => {
+      rollback(d.id);
+      setBusyRollback(false);
+      setRollbackTarget(null);
+      // Geri-al: rollback öncesi sürümü tekrar deploy ederek eski durumu yeniden yayınla.
+      toastUndo("Geri alma tetiklendi", {
+        description: `${d.version} (${ENV_LABEL[d.env]}) önceki kararlı sürüme dönülüyor`,
+        onUndo: () => {
+          deploy(d.env, d.changelog);
+          toast.info(`${d.version} yeniden yayına alınıyor`, {
+            description: `${ENV_LABEL[d.env]} ortamı geri alma iptal edildi`,
+          });
+        },
+      });
+    }, 600);
   }
 
   function exportJson() {
@@ -329,8 +366,9 @@ export default function Releases() {
               <EnvCard
                 key={env.name}
                 env={env}
+                busy={busyDeploy === env.name}
                 onDeploy={() =>
-                  env.name === "prod" ? setPromoteEnv("prod") : runDeploy(env.name)
+                  env.name === "prod" ? setPromoteEnv("prod") : startDeploy(env.name)
                 }
               />
             ))}
@@ -346,6 +384,11 @@ export default function Releases() {
             <span className="text-[11px] text-muted-foreground/70">
               {filtered.length} / {deployments.length} kayıt
             </span>
+            {filtered.length > 0 && (
+              <span className="ml-auto hidden text-[11px] text-muted-foreground/60 md:inline">
+                ↑↓ gez · Enter aç
+              </span>
+            )}
           </div>
 
           <FilterBar
@@ -437,14 +480,22 @@ export default function Releases() {
               }
             />
           ) : (
-            <div className="space-y-2">
-              {filtered.map((d) => (
+            <div
+              ref={containerRef}
+              tabIndex={0}
+              onKeyDown={onKeyDown}
+              className="space-y-2 outline-none"
+            >
+              {filtered.map((d, i) => (
                 <DeployRow
                   key={d.id}
                   d={d}
                   meta={metaFor(d)}
                   cols={cols}
                   selected={selected.has(d.id)}
+                  navActive={active === i}
+                  onMouseEnter={() => setActive(i)}
+                  navIndex={i}
                   onToggleSel={() => toggleSel(d.id)}
                   onOpen={() => setDrawerId(d.id)}
                   onRollback={() => setRollbackTarget(d)}
@@ -498,11 +549,12 @@ export default function Releases() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => setPromoteEnv(null)}>
+            <Button variant="outline" size="sm" disabled={busyPromote} onClick={() => setPromoteEnv(null)}>
               Vazgeç
             </Button>
-            <Button size="sm" className="gap-1.5" onClick={confirmPromote}>
-              <ArrowUpToLine className="size-3.5" /> Onayla ve Yükselt
+            <Button size="sm" className="gap-1.5" loading={busyPromote} onClick={confirmPromote}>
+              <ArrowUpToLine className="size-3.5" />
+              {busyPromote ? "Yükseltiliyor…" : "Onayla ve Yükselt"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -527,11 +579,12 @@ export default function Releases() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => setRollbackTarget(null)}>
+            <Button variant="outline" size="sm" disabled={busyRollback} onClick={() => setRollbackTarget(null)}>
               Vazgeç
             </Button>
-            <Button variant="destructive" size="sm" className="gap-1.5" onClick={confirmRollback}>
-              <Undo2 className="size-3.5" /> Geri Al
+            <Button variant="destructive" size="sm" className="gap-1.5" loading={busyRollback} onClick={confirmRollback}>
+              <Undo2 className="size-3.5" />
+              {busyRollback ? "Geri alınıyor…" : "Geri Al"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -541,7 +594,7 @@ export default function Releases() {
 }
 
 // ── Ortam kartı ────────────────────────────────────────────────────
-function EnvCard({ env, onDeploy }: { env: Environment; onDeploy: () => void }) {
+function EnvCard({ env, busy, onDeploy }: { env: Environment; busy?: boolean; onDeploy: () => void }) {
   const deploying = env.status === "deploying";
   const health = ENV_HEALTH[env.name];
   return (
@@ -575,10 +628,11 @@ function EnvCard({ env, onDeploy }: { env: Environment; onDeploy: () => void }) 
           size="sm"
           className="mt-3 w-full gap-1.5"
           disabled={deploying}
+          loading={busy}
           onClick={onDeploy}
         >
           {env.name === "prod" ? <ArrowUpToLine className="size-3.5" /> : <Rocket className="size-3.5" />}
-          {deploying ? "Deploy ediliyor…" : env.name === "prod" ? "Prod'a Yükselt" : "Deploy"}
+          {busy ? "Başlatılıyor…" : deploying ? "Deploy ediliyor…" : env.name === "prod" ? "Prod'a Yükselt" : "Deploy"}
         </Button>
       </CardContent>
     </Card>
@@ -609,6 +663,9 @@ function DeployRow({
   meta,
   cols,
   selected,
+  navActive,
+  navIndex,
+  onMouseEnter,
   onToggleSel,
   onOpen,
   onRollback,
@@ -618,6 +675,9 @@ function DeployRow({
   meta: ReleaseMeta;
   cols: Record<string, boolean>;
   selected: boolean;
+  navActive: boolean;
+  navIndex: number;
+  onMouseEnter: () => void;
   onToggleSel: () => void;
   onOpen: () => void;
   onRollback: () => void;
@@ -625,9 +685,12 @@ function DeployRow({
 }) {
   return (
     <div
+      data-nav-index={navIndex}
+      onMouseEnter={onMouseEnter}
       className={cn(
         "group flex items-center gap-3 rounded-xl border bg-card px-3 py-2.5 transition-colors hover:border-primary/30 hover:bg-accent/20",
         selected && "border-primary/40 bg-primary/5",
+        navActive && "ring-1 ring-inset ring-primary/40 bg-accent/40",
       )}
     >
       <input

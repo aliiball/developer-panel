@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   Lightning,
   FloppyDisk,
+  CircleNotch,
   ArrowCounterClockwise,
   Columns as ColumnsIcon,
   WarningCircle,
@@ -70,6 +71,7 @@ import {
   DialogDescription,
 } from "~/components/ui/dialog";
 import { toast } from "sonner";
+import { toastUndo } from "~/lib/feedback";
 
 export function meta() {
   return [{ title: "Model Editörü — MetaPanel" }];
@@ -163,6 +165,7 @@ export default function SchemaModelEditor() {
   const [confirmDelete, setConfirmDelete] = useState<string[] | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [dirtyTick, setDirtyTick] = useState(0);
+  const [busySave, setBusySave] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
@@ -268,9 +271,21 @@ export default function SchemaModelEditor() {
     if (!aiInput.trim()) return;
     const res = getMockAIResponse(aiInput, { model: m.name });
     if (res.preview && res.preview.kind === "fields") {
+      const beforeIds = new Set(
+        (useSchemaStore.getState().models.find((mm) => mm.id === m.id)?.fields ?? []).map((f) => f.id),
+      );
       const summary = applyPreview({ ...res.preview, targetModel: m.name });
-      toast.success("AI alanları eklendi", { description: summary });
+      const addedIds = (useSchemaStore.getState().models.find((mm) => mm.id === m.id)?.fields ?? [])
+        .filter((f) => !beforeIds.has(f.id))
+        .map((f) => f.id);
       touch();
+      toastUndo("AI alanları eklendi", {
+        description: summary,
+        onUndo: () => {
+          addedIds.forEach((id) => deleteField(m.id, id));
+          touch();
+        },
+      });
     } else {
       toast.info("Bu istek için alan önerisi üretemedim", {
         description: "Örnek: \"fiyat ve stok ekle\" ya da \"SEO alanları ekle\".",
@@ -294,14 +309,32 @@ export default function SchemaModelEditor() {
   }
 
   function doDelete(ids: string[]) {
+    const removed = m.fields.filter((f) => ids.includes(f.id));
     ids.forEach((id) => deleteField(m.id, id));
     setSelected(new Set());
     setConfirmDelete(null);
     setDrawerField(null);
-    toast.success(`${ids.length} alan silindi`, {
-      description: "Bu işlem yerel taslakta yapıldı.",
-    });
     touch();
+    toastUndo(`${ids.length} alan silindi`, {
+      description: "Bu işlem yerel taslakta yapıldı.",
+      onUndo: () => {
+        removed.forEach((f) =>
+          addField(m.id, {
+            name: f.name,
+            type: f.type,
+            required: f.required,
+            unique: f.unique,
+            indexed: f.indexed,
+            defaultValue: f.defaultValue,
+            description: f.description,
+            validation: f.validation,
+            enumValues: f.enumValues,
+            relationModel: f.relationModel,
+          }),
+        );
+        touch();
+      },
+    });
   }
 
   function save() {
@@ -311,11 +344,15 @@ export default function SchemaModelEditor() {
       });
       return;
     }
-    const now = new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
-    setSavedAt(now);
-    toast.success("Model kaydedildi", {
-      description: `${m.name} · ${stats.total} alan · migration taslağı üretildi.`,
-    });
+    setBusySave(true);
+    setTimeout(() => {
+      const now = new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
+      setSavedAt(now);
+      setBusySave(false);
+      toast.success("Model kaydedildi", {
+        description: `${m.name} · ${stats.total} alan · migration taslağı üretildi.`,
+      });
+    }, 600);
   }
 
   const activeField = drawerField ? m.fields.find((f) => f.id === drawerField) ?? null : null;
@@ -352,8 +389,9 @@ export default function SchemaModelEditor() {
         >
           <ArrowCounterClockwise className="size-4" /> Geri Al
         </Button>
-        <Button size="sm" className="h-8 gap-1.5" onClick={save}>
-          <FloppyDisk className="size-4" /> Kaydet
+        <Button size="sm" className="h-8 gap-1.5" disabled={busySave} aria-busy={busySave} onClick={save}>
+          {busySave ? <CircleNotch className="size-4 animate-spin" /> : <FloppyDisk className="size-4" />}
+          {busySave ? "Kaydediliyor…" : "Kaydet"}
         </Button>
       </PageHeader>
 

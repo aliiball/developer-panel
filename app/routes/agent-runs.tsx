@@ -25,6 +25,7 @@ import {
   CurrencyDollar,
 } from "@phosphor-icons/react";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
+import { useListNav } from "~/hooks/use-list-nav";
 import { useCopilotStore, type AgentRun } from "~/stores/copilot-store";
 import {
   KpiCard,
@@ -128,6 +129,8 @@ export default function AgentRuns() {
   const [model, setModel] = useState<string>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [drawer, setDrawer] = useState<AgentRun | null>(null);
+  const [rerunningId, setRerunningId] = useState<string | null>(null);
+  const [bulkRerunning, setBulkRerunning] = useState(false);
 
   // ── KPI hesapları ──────────────────────────────────────────────────
   const total = runs.length;
@@ -192,15 +195,24 @@ export default function AgentRuns() {
   }
 
   function rerun(r: AgentRun) {
-    queuePrompt(r.prompt);
-    toast.success("Prompt Copilot'a yeniden kuyruğa alındı", {
-      description: r.prompt.length > 60 ? r.prompt.slice(0, 60) + "…" : r.prompt,
-    });
+    setRerunningId(r.id);
+    setTimeout(() => {
+      queuePrompt(r.prompt);
+      setRerunningId(null);
+      toast.success("Prompt Copilot'a yeniden kuyruğa alındı", {
+        description: r.prompt.length > 60 ? r.prompt.slice(0, 60) + "…" : r.prompt,
+      });
+    }, 600);
   }
 
   function bulkRerun() {
-    toast.success(`${selected.size} çalıştırma yeniden kuyruğa alındı`);
-    setSelected(new Set());
+    const n = selected.size;
+    setBulkRerunning(true);
+    setTimeout(() => {
+      setBulkRerunning(false);
+      setSelected(new Set());
+      toast.success(`${n} çalıştırma yeniden kuyruğa alındı`);
+    }, 600);
   }
 
   function bulkArchive() {
@@ -223,6 +235,12 @@ export default function AgentRuns() {
     setModel("all");
   }
 
+  // ── Klavye gezinme (j/↓ · k/↑ · Enter aç · Esc temizle) ───────────────
+  const { active, setActive, onKeyDown, containerRef } = useListNav(
+    filtered.length,
+    (i) => setDrawer(filtered[i]),
+  );
+
   const drawerMeta = drawer ? metaById.get(drawer.id) : undefined;
 
   const drawerTabs: DrawerTab[] =
@@ -231,7 +249,14 @@ export default function AgentRuns() {
           {
             value: "overview",
             label: "Genel",
-            content: <OverviewTab run={drawer} meta={drawerMeta} onRerun={() => rerun(drawer)} />,
+            content: (
+              <OverviewTab
+                run={drawer}
+                meta={drawerMeta}
+                onRerun={() => rerun(drawer)}
+                rerunning={rerunningId === drawer.id}
+              />
+            ),
           },
           {
             value: "result",
@@ -382,8 +407,14 @@ export default function AgentRuns() {
 
         {/* ── BulkBar ─────────────────────────────────────────────── */}
         <BulkBar count={selected.size} onClear={() => setSelected(new Set())}>
-          <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs" onClick={bulkRerun}>
-            <ArrowClockwise className="size-3.5" /> Yeniden çalıştır
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1.5 px-2 text-xs"
+            onClick={bulkRerun}
+            loading={bulkRerunning}
+          >
+            {!bulkRerunning && <ArrowClockwise className="size-3.5" />} Yeniden çalıştır
           </Button>
           <Button
             variant="ghost"
@@ -399,9 +430,14 @@ export default function AgentRuns() {
         <div className="rounded-xl border bg-card">
           <div className="flex items-center justify-between border-b px-3.5 py-2">
             <h2 className="text-sm font-semibold">Çalıştırma Geçmişi</h2>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {filtered.length} / {runs.length} kayıt
-            </span>
+            <div className="flex items-center gap-2.5">
+              <span className="hidden text-[11px] text-muted-foreground sm:inline">
+                ↑↓ gez · Enter aç
+              </span>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {filtered.length} / {runs.length} kayıt
+              </span>
+            </div>
           </div>
 
           {loading ? (
@@ -435,8 +471,9 @@ export default function AgentRuns() {
               )}
             </div>
           ) : (
-            <ul className="divide-y">
-              {filtered.map((r) => {
+            <div ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className="outline-none">
+              <ul className="divide-y">
+              {filtered.map((r, i) => {
                 const m = metaById.get(r.id)!;
                 const Icon = r.previewKind
                   ? KIND_ICON[r.previewKind] ?? BotMessageSquare
@@ -445,9 +482,12 @@ export default function AgentRuns() {
                 return (
                   <li
                     key={r.id}
+                    data-nav-index={i}
+                    onMouseEnter={() => setActive(i)}
                     className={cn(
                       "group flex items-center gap-2.5 px-3.5 py-2.5 text-sm transition-colors hover:bg-accent/40",
                       sel && "bg-primary/5",
+                      active === i && "bg-accent/40 ring-1 ring-inset ring-primary/40",
                     )}
                   >
                     <input
@@ -501,16 +541,21 @@ export default function AgentRuns() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-7 shrink-0 opacity-0 group-hover:opacity-100"
+                      className={cn(
+                        "size-7 shrink-0 opacity-0 group-hover:opacity-100",
+                        rerunningId === r.id && "opacity-100",
+                      )}
                       onClick={() => rerun(r)}
+                      loading={rerunningId === r.id}
                       aria-label="Yeniden çalıştır"
                     >
-                      <ArrowClockwise className="size-3.5" />
+                      {rerunningId !== r.id && <ArrowClockwise className="size-3.5" />}
                     </Button>
                   </li>
                 );
               })}
-            </ul>
+              </ul>
+            </div>
           )}
         </div>
       </PageBody>
@@ -531,8 +576,14 @@ export default function AgentRuns() {
           drawer &&
           drawerMeta && (
             <div className="flex w-full items-center gap-2 p-4">
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={() => rerun(drawer)}>
-                <ArrowClockwise className="size-4" /> Yeniden çalıştır
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => rerun(drawer)}
+                loading={rerunningId === drawer.id}
+              >
+                {rerunningId !== drawer.id && <ArrowClockwise className="size-4" />} Yeniden çalıştır
               </Button>
               <Button
                 variant="ghost"
@@ -636,10 +687,12 @@ function OverviewTab({
   run,
   meta,
   onRerun,
+  rerunning,
 }: {
   run: AgentRun;
   meta: RunMeta;
   onRerun: () => void;
+  rerunning: boolean;
 }) {
   const rate = MODEL_RATE[meta.model];
   return (
@@ -678,8 +731,14 @@ function OverviewTab({
         <p className="text-xs leading-relaxed text-muted-foreground">{meta.summary}</p>
       </div>
 
-      <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={onRerun}>
-        <ArrowClockwise className="size-4" /> Bu promptu yeniden çalıştır
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full gap-1.5"
+        onClick={onRerun}
+        loading={rerunning}
+      >
+        {!rerunning && <ArrowClockwise className="size-4" />} Bu promptu yeniden çalıştır
       </Button>
     </div>
   );

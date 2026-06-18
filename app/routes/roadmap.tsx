@@ -16,6 +16,7 @@ import {
   Tag,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { toastUndo } from "~/lib/feedback";
 import { PageHeader, PageBody } from "~/components/shell/PageHeader";
 import { KanbanBoard, type KanbanColumn } from "~/components/delivery/KanbanBoard";
 import { VotePill } from "~/components/delivery/VotePill";
@@ -139,12 +140,16 @@ export default function Roadmap() {
 
   function handleVote(f: Issue) {
     if (isLocalOnly(f.id)) {
-      // page-local extra → optimistic local increment
+      // page-local extra → optimistic local increment (geri-alınabilir)
       setVotedDelta((d) => ({ ...d, [f.id]: (d[f.id] ?? 0) + 1 }));
+      toastUndo(`Oy verildi: ${f.id}`, {
+        description: `"${f.title}" şimdi ${f.votes + 1} oy.`,
+        onUndo: () => setVotedDelta((d) => ({ ...d, [f.id]: (d[f.id] ?? 0) - 1 })),
+      });
     } else {
-      upvote(f.id); // store-backed → persists in store
+      upvote(f.id); // store-backed → persists in store (store'da geri-al API'si yok)
+      toast.success(`Oy verildi: ${f.id}`, { description: `"${f.title}" şimdi ${f.votes + 1} oy.` });
     }
-    toast.success(`Oy verildi: ${f.id}`, { description: `"${f.title}" şimdi ${f.votes + 1} oy.` });
   }
 
   function handleStage(f: Issue, v: RoadmapStage) {
@@ -152,8 +157,13 @@ export default function Roadmap() {
       toast.info("Bu öneri seed kaydı; aşama değişimi oturumla sınırlı.", { description: `${f.id} → ${STAGE_LABEL[v]}` });
       return;
     }
-    setStage(f.id, v);
-    toast.success(`Aşama güncellendi: ${f.id}`, { description: STAGE_LABEL[v] });
+    const prev = f.stage ?? "proposed";
+    if (prev === v) return;
+    setStage(f.id, v); // optimistic
+    toastUndo(`Aşama güncellendi: ${f.id}`, {
+      description: `${STAGE_LABEL[prev]} → ${STAGE_LABEL[v]}`,
+      onUndo: () => setStage(f.id, prev),
+    });
   }
 
   function toggleModule(m: string) {

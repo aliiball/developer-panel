@@ -56,6 +56,7 @@ import {
   type AuditEvent,
 } from "~/components/enterprise";
 import { toast } from "sonner";
+import { toastUndo } from "~/lib/feedback";
 
 export function meta() {
   return [{ title: "Modules — MetaPanel" }];
@@ -88,6 +89,7 @@ export default function Modules() {
   const [cats, setCats] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [confirm, setConfirm] = useState<Confirm>(null);
+  const [busy, setBusy] = useState(false); // confirm aksiyonu yürütülüyor
   const [drawer, setDrawer] = useState<ModuleDef | null>(null);
 
   // Tüm modül evreni: kurulu (store) + marketplace adayları, kaldırılanlar çıkar.
@@ -166,28 +168,30 @@ export default function Modules() {
       return n;
     });
     if (drawer?.id === m.id) setDrawer(null);
-    toast.success(`${m.name} kaldırıldı`, {
+    toastUndo(`${m.name} kaldırıldı`, {
       description: dependents.length
         ? `${dependents.length} bağımlı modül etkilenebilir`
         : "Bağımlılık çakışması yok",
-      action: {
-        label: "Geri al",
-        onClick: () =>
-          setRemoved((p) => {
-            const n = new Set(p);
-            n.delete(m.id);
-            return n;
-          }),
-      },
+      onUndo: () =>
+        setRemoved((p) => {
+          const n = new Set(p);
+          n.delete(m.id);
+          return n;
+        }),
     });
   }
 
   function runConfirm() {
-    if (!confirm) return;
-    if (confirm.kind === "install") doInstall(confirm.mod);
-    if (confirm.kind === "update") doUpdate(confirm.mod, confirm.meta);
-    if (confirm.kind === "remove") doRemove(confirm.mod);
-    setConfirm(null);
+    if (!confirm || busy) return;
+    const c = confirm;
+    setBusy(true);
+    setTimeout(() => {
+      if (c.kind === "install") doInstall(c.mod);
+      if (c.kind === "update") doUpdate(c.mod, c.meta);
+      if (c.kind === "remove") doRemove(c.mod);
+      setBusy(false);
+      setConfirm(null);
+    }, 600);
   }
 
   function bulkUpdate() {
@@ -478,7 +482,13 @@ export default function Modules() {
       />
 
       {/* ── Onay diyaloğu ──────────────────────────────────────────── */}
-      <ConfirmDialog confirm={confirm} universe={universe} onCancel={() => setConfirm(null)} onConfirm={runConfirm} />
+      <ConfirmDialog
+        confirm={confirm}
+        universe={universe}
+        busy={busy}
+        onCancel={() => !busy && setConfirm(null)}
+        onConfirm={runConfirm}
+      />
     </>
   );
 }
@@ -917,11 +927,13 @@ function activityFor(mod: ModuleDef, meta?: ModuleMeta): AuditEvent[] {
 function ConfirmDialog({
   confirm,
   universe,
+  busy,
   onCancel,
   onConfirm,
 }: {
   confirm: Confirm;
   universe: ModuleDef[];
+  busy: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -965,10 +977,14 @@ function ConfirmDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" disabled={busy} onClick={onCancel}>
             Vazgeç
           </Button>
-          <Button variant={kind === "remove" ? "destructive" : "default"} onClick={onConfirm}>
+          <Button
+            variant={kind === "remove" ? "destructive" : "default"}
+            loading={busy}
+            onClick={onConfirm}
+          >
             {kind === "install" ? "Kur" : kind === "update" ? "Güncelle" : "Kaldır"}
           </Button>
         </DialogFooter>

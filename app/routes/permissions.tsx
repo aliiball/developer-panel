@@ -55,6 +55,7 @@ import {
   DialogFooter,
 } from "~/components/ui/dialog";
 import { toast } from "sonner";
+import { toastUndo } from "~/lib/feedback";
 import { cn } from "~/lib/utils";
 
 export function meta() {
@@ -91,6 +92,8 @@ export default function Permissions() {
 
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Role | null>(null);
+
+  const [busySave, setBusySave] = useState(false);
 
   // ── türetilmiş veri ───────────────────────────────────────────────
   const visibleRoles = useMemo(
@@ -178,6 +181,7 @@ export default function Permissions() {
 
   function toggleColumnAll(role: Role, on: boolean) {
     if (role.system) return;
+    const before = { ...role.permissions };
     setRoles((prev) =>
       prev.map((r) =>
         r.id === role.id
@@ -185,7 +189,13 @@ export default function Permissions() {
           : r,
       ),
     );
-    toast.success(on ? "Tüm izinler verildi" : "Tüm izinler kaldırıldı", { description: role.name });
+    toastUndo(on ? "Tüm izinler verildi" : "Tüm izinler kaldırıldı", {
+      description: role.name,
+      onUndo: () =>
+        setRoles((prev) =>
+          prev.map((r) => (r.id === role.id ? { ...r, permissions: before } : r)),
+        ),
+    });
   }
 
   function createRole() {
@@ -242,15 +252,27 @@ export default function Permissions() {
   }
 
   function saveChanges() {
-    setBaseline(roles.map((r) => ({ ...r, permissions: { ...r.permissions } })));
-    pushAudit(`Matris değişiklikleri kaydedildi`, `${dirtyCount} değişiklik onaylandı`, "emerald");
-    toast.success("Değişiklikler kaydedildi", { description: `${dirtyCount} izin değişikliği onaylandı` });
+    if (busySave) return;
+    const approved = dirtyCount;
+    setBusySave(true);
+    setTimeout(() => {
+      setBaseline(roles.map((r) => ({ ...r, permissions: { ...r.permissions } })));
+      pushAudit(`Matris değişiklikleri kaydedildi`, `${approved} değişiklik onaylandı`, "emerald");
+      setBusySave(false);
+      toast.success("Değişiklikler kaydedildi", { description: `${approved} izin değişikliği onaylandı` });
+    }, 600);
   }
 
   function resetChanges() {
+    const draft = roles.map((r) => ({ ...r, permissions: { ...r.permissions } }));
+    const reverted = dirtyCount;
     setRoles(baseline.map((r) => ({ ...r, permissions: { ...r.permissions } })));
     setConfirmReset(false);
-    toast.info("Değişiklikler geri alındı");
+    toastUndo("Değişiklikler geri alındı", {
+      description: `${reverted} taslak değişiklik son kayda döndürüldü`,
+      undoLabel: "Taslağı geri yükle",
+      onUndo: () => setRoles(draft),
+    });
   }
 
   function deleteRole(role: Role) {
@@ -355,10 +377,16 @@ export default function Permissions() {
               </span>
               <span className="text-xs text-muted-foreground">Onaylanana kadar etkin değildir.</span>
               <div className="ml-auto flex items-center gap-1.5">
-                <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setConfirmReset(true)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  disabled={busySave}
+                  onClick={() => setConfirmReset(true)}
+                >
                   <ArrowCounterClockwise className="size-3.5" /> Geri Al
                 </Button>
-                <Button size="sm" className="gap-1.5" onClick={saveChanges}>
+                <Button size="sm" className="gap-1.5" loading={busySave} onClick={saveChanges}>
                   <FloppyDisk className="size-3.5" /> Kaydet & Onayla
                 </Button>
               </div>
