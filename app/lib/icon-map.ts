@@ -2,17 +2,17 @@ import {
   ShoppingCart,
   Newspaper,
   Users,
-  PackageOpen,
-  KeyRound,
+  Package as PackageOpen,
+  Key as KeyRound,
   CreditCard,
   Image,
   Plug,
-  BarChart3,
-  Languages,
+  ChartBar as BarChart3,
+  Translate as Languages,
   Bell,
-  Box,
-  type LucideIcon,
-} from "lucide-react";
+  Cube as Box,
+  type Icon as LucideIcon,
+} from "@phosphor-icons/react";
 
 // Maps the string icon name stored on module data to a lucide component.
 const MAP: Record<string, LucideIcon> = {
