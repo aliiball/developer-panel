@@ -328,7 +328,7 @@ export default function Data() {
         let coerced: Cell = editValue;
         if (typeof original === "number") coerced = Number(editValue) || 0;
         else if (typeof original === "boolean") coerced = editValue === "true";
-        return { ...r, [field]: coerced, _updatedBy: "turksab.yonetim@gmail.com", _updatedAt: "az önce" };
+        return { ...r, [field]: coerced, _updatedBy: "karacai@yandex.com", _updatedAt: "az önce" };
       }),
     );
     setEditing(null);
@@ -344,7 +344,7 @@ export default function Data() {
     const fresh = {
       id: newId,
       _status: "draft" as RecordStatus,
-      _updatedBy: "turksab.yonetim@gmail.com",
+      _updatedBy: "karacai@yandex.com",
       _updatedAt: "az önce",
     } as Row;
     for (const f of model.fields) fresh[f.name] = mockValue(f, rows.length);

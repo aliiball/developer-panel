@@ -218,7 +218,7 @@ function execute(raw: string): { out: OutLine[]; tone?: Line["tone"]; ms: number
         ms,
         out: [
           "14:09:51 INFO  http   GET /api/orders 200 41ms",
-          "14:09:52 INFO  auth   login turksab.yonetim@gmail.com",
+          "14:09:52 INFO  auth   login karacai@yandex.com",
           "14:09:55 WARN  pay    webhook retry 2/5 (stripe)",
           "14:10:01 ERROR pay    webhook timeout after 30s",
           "14:10:02 INFO  http   POST /api/migrate 200 218ms",
@@ -242,7 +242,7 @@ function execute(raw: string): { out: OutLine[]; tone?: Line["tone"]; ms: number
         ],
       };
     case "whoami":
-      return { ms, out: ["turksab.yonetim@gmail.com", "rol: admin · workspace: turksab · 2FA: aktif"] };
+      return { ms, out: ["karacai@yandex.com", "rol: admin · workspace: turksab · 2FA: aktif"] };
     case "history":
       return { ms, out: ["(geçmiş ↑/↓ ile gezilebilir — bu oturumun komutları)"] };
     case "echo":
@@ -539,7 +539,7 @@ export default function Terminal() {
           <Field label="Çalışma dizini" mono>{active.cwd}</Field>
           <Field label="Komut sayısı">{active.history.length}</Field>
           <Field label="Çıktı satırı">{active.lines.reduce((a, l) => a + l.out.length, 0)}</Field>
-          <Field label="Kullanıcı" mono>turksab.yonetim@gmail.com</Field>
+          <Field label="Kullanıcı" mono>karacai@yandex.com</Field>
           <Field label="Açık oturum">{sessions.length}</Field>
           <div className="mt-4">
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">

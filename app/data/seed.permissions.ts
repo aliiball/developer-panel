@@ -60,7 +60,7 @@ export const ROLE_META: Record<string, RoleMeta> = {
 export const DEFAULT_ROLE_META: RoleMeta = {
   users: 0,
   updatedAt: "2026-06-18",
-  updatedBy: "turksab.yonetim@gmail.com",
+  updatedBy: "karacai@yandex.com",
   trend: [0, 0, 0, 0, 0, 0, 0, 0],
 };
 

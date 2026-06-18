@@ -158,7 +158,7 @@ export default function Permissions() {
     setAudit((prev) => [
       {
         id: `a-${Date.now()}`,
-        actor: "turksab.yonetim@gmail.com",
+        actor: "karacai@yandex.com",
         action,
         at: "az önce",
         icon: PencilSimple,
@@ -734,25 +734,23 @@ function RoleDrawer({
       label: "Genel",
       content: (
         <div className="space-y-4">
-          <div className="rounded-lg border bg-card/50">
-            <div className="px-3">
-              <Field label="Rol ID" mono>{role.id}</Field>
-              <Field label="Tip">
-                {role.system ? (
-                  <Badge variant="outline" className="gap-1">
-                    <Lock className="size-3" /> Sistem (kilitli)
-                  </Badge>
-                ) : (
-                  <Badge variant="secondary">Özel</Badge>
-                )}
-              </Field>
-              <Field label="Atanmış kullanıcı">{meta?.users ?? 0}</Field>
-              <Field label="İzin sayısı">
-                {granted.length} / {ALL_PERMISSION_KEYS.length}
-              </Field>
-              <Field label="Son güncelleyen">{meta?.updatedBy ?? "—"}</Field>
-              <Field label="Son güncelleme" mono>{meta?.updatedAt ?? "—"}</Field>
-            </div>
+          <div className="divide-y rounded-lg border bg-card/50">
+            <Field label="Rol ID" mono>{role.id}</Field>
+            <Field label="Tip">
+              {role.system ? (
+                <Badge variant="outline" className="gap-1">
+                  <Lock className="size-3" /> Sistem (kilitli)
+                </Badge>
+              ) : (
+                <Badge variant="secondary">Özel</Badge>
+              )}
+            </Field>
+            <Field label="Atanmış kullanıcı">{meta?.users ?? 0}</Field>
+            <Field label="İzin sayısı">
+              {granted.length} / {ALL_PERMISSION_KEYS.length}
+            </Field>
+            <Field label="Son güncelleyen">{meta?.updatedBy ?? "—"}</Field>
+            <Field label="Son güncelleme" mono>{meta?.updatedAt ?? "—"}</Field>
           </div>
 
           <div>

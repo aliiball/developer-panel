@@ -131,7 +131,7 @@ export const DEFAULT_META: ModelMeta = {
   health: "draft",
   rows: 0,
   changeTrend: [0, 0, 1, 0, 0, 0, 1],
-  owner: "turksab.yonetim@gmail.com",
+  owner: "karacai@yandex.com",
   updatedAt: "az önce",
   referencedBy: [],
 };
@@ -162,7 +162,7 @@ export const MODEL_AUDIT: Record<string, AuditEvent[]> = {
 export function auditFor(modelId: string, modelName: string): AuditEvent[] {
   return (
     MODEL_AUDIT[modelId] ?? [
-      { id: `${modelId}-a1`, action: "model oluşturuldu", actor: "turksab.yonetim@gmail.com", at: "az önce", icon: Database, tone: "emerald", detail: `CREATE TABLE ${modelName.toLowerCase()}s (...)` },
+      { id: `${modelId}-a1`, action: "model oluşturuldu", actor: "karacai@yandex.com", at: "az önce", icon: Database, tone: "emerald", detail: `CREATE TABLE ${modelName.toLowerCase()}s (...)` },
     ]
   );
 }
